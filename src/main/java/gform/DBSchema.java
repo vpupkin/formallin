@@ -26,13 +26,13 @@ public class DBSchema {
 	
 	public DBSchema(String dbName) throws ClassNotFoundException, SQLException{
 		Class.forName("com.mysql.jdbc.Driver");
-		c = DriverManager.getConnection("jdbc:mysql://soporte:3306/"+dbName,"root","root");
+		c = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+dbName,"root","root");
 		md = c.getMetaData();
 	}
 	
 	public boolean isTableExists(String name) throws SQLException{
 		
-		ResultSet rs1 = md.getColumns("gescsidiomas", "gescsidiomas", name, null);
+		ResultSet rs1 = md.getColumns("gform", "gform", name, null);
 		return (rs1.next());
 	}
 

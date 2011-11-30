@@ -39,7 +39,7 @@ public class GForm {
 	}
 	
 	
-	// TODO quitar este método, recibir tableName como parámetro del constructor
+	// TODO quitar este mï¿½todo, recibir tableName como parï¿½metro del constructor
 	public String parceTableName(String xmlForm) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException{
 		xmlForm = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + xmlForm;
 		XmlDoc xml = new XmlDoc(new ByteArrayInputStream(xmlForm.getBytes()));
@@ -490,28 +490,28 @@ public class GForm {
 		gform.setWebAppPath("web");
 		gform.setSubDir("traducciones");
 		
-		gform.setTemplate("gform/servicios_traduccion.jsp");
-		gform.generateFormJsp();
-		//gform.updateDBSchema();
-		//gform.generateProcesaJsp();
-		
-		gform.setTemplate("gform/traduccion.jsp");
-		gform.generateFormJsp();
-		//gform.updateDBSchema();
-		//gform.generateProcesaJsp();
-		
-		gform.setTemplate("gform/revision.jsp");
-		gform.generateFormJsp();
-		//gform.updateDBSchema();
-		//gform.generateProcesaJsp();
-		
-		//gform.setTemplate("gform/traductor.jsp");
+		//gform.setTemplate("gform/servicios_traduccion.jsp");
 		//gform.generateFormJsp();
-		//formClientes.updateDBSchema();
+		//gform.updateDBSchema();
 		//gform.generateProcesaJsp();
 		
-		gform.setTemplate("gform/cliente_traduccion.jsp");
+		//gform.setTemplate("gform/traduccion.jsp");
+		//gform.generateFormJsp();
+		//gform.updateDBSchema();
+		//gform.generateProcesaJsp();
+		
+		//gform.setTemplate("gform/revision.jsp");
+		//gform.generateFormJsp();
+		//gform.updateDBSchema();
+		//gform.generateProcesaJsp();
+		
+		gform.setTemplate("gform/traductor.jsp");
 		gform.generateFormJsp();
+		gform.updateDBSchema();
+		//gform.generateProcesaJsp();
+		
+		//gform.setTemplate("gform/cliente_traduccion.jsp");
+		//gform.generateFormJsp();
 		//gform.generateProcesaJsp();
 		
 		//Table contactos = db.parseTable("contactos");
