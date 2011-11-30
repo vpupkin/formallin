@@ -2,3 +2,6 @@ syntax: regexp
 ^.settings$ 
 syntax: glob
 *.log
+.classpath
+syntax: regexp
+^target$
