@@ -11,7 +11,7 @@ import junit.framework.TestCase;
  * 
  * Creation:  30.11.2011::15:25:33<br> 
  */
-public class DBSchemaTest extends TestCase {
+public class DBSchemaTest_GESHA extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
