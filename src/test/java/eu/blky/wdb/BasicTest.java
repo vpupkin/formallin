@@ -21,7 +21,17 @@ public class BasicTest extends TestCase {
 		super.tearDown();
 	} 
 	
-	public void testIsTableExists() {
+	public void test0() {
+		Wdb author = new Wdb ("Author");
+		author.setProperty("First name", "Cervantes");
+		author.addProperty("Second name", "Miguel");
+
+		 
+		
+		System.out.println(author);
+	}
+	
+	public void test1st() {
 		Wdb author = new Wdb ("Author");
 		author.setProperty("First name", "Cervantes");
 		author.addProperty("Second name", "Miguel");
@@ -31,6 +41,29 @@ public class BasicTest extends TestCase {
 		book.setProperty("Author", author);
 		
 		System.out.println(book);
+	}
+	
+	public void test2nd() {
+		Wdb author = new Wdb ("Author");
+		author.setProperty("First name", "Cervantes");
+		author.addProperty("Second name", "Miguel");
+
+		Wdb  book = new Wdb ("Book");
+		book.setProperty("Title", "Don Quijote");
+		book.setProperty("Author", author);
+		Wdb  book2 = new Wdb ("Book");
+		book2.setProperty("Title", "Kornelia");
+		book2.setProperty("Author", author);
+		
+		Wdb  rack = new Wdb ("Shelf");
+		rack.setProperty("Color", "red");
+		rack.setProperty("book", book);
+		rack.setProperty("book", book2);
+		 
+		 
+		
+		
+		System.out.println(rack);
 	}
 }
 

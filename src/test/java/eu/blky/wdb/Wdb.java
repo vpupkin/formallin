@@ -2,6 +2,7 @@ package eu.blky.wdb;
  
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map; 
 import java.util.Set;
 
@@ -14,11 +15,20 @@ import java.util.Set;
  * 
  * Creation:  19.12.2011::14:31:05<br> 
  */
-public class Wdb {
+public class Wdb extends LinkedList<Wdb>{
 
 	private String oName;
 	public String toString(){
-		return oName+":"+this.categories+"={"+props+"}";
+		
+		String propsAsString = props.toString();
+		StringBuffer sb = new StringBuffer();
+		for (String s:propsAsString .split("\n")){
+			sb .append("\n\t");
+			sb .append(s);
+			
+		}
+		propsAsString = sb.toString();
+		return oName+":"+this.categories+"={"+propsAsString+"}";
 	}
 
 	public Wdb(String oName) {
@@ -33,14 +43,22 @@ public class Wdb {
 	}
 	public void setProperty(String propertyName, Object valuePar) {
 		if (valuePar == null )return; // TODO
-		if (valuePar.equals(this))throw new WdbException("Wrong Parent - (itself)_!");
+		if (this.toString().hashCode() == valuePar.toString().hashCode()){
+			throw new WdbException("Wrong Parent - (itself)_!");
+		}
 		if (valuePar instanceof  Wdb) {
 			// compare own categories with valuePar
 			Wdb toAssignValue = (Wdb)valuePar;
 			if (1==2 && diffCategory(this,toAssignValue)==0){
 				throw new WdbException("identicall category-Set !");
 			}else{
-				props.put( propertyName, toAssignValue);
+				Wdb oTmp = props.get(propertyName);
+				if (oTmp == null){
+					oTmp = toAssignValue;
+				}else{
+					oTmp.addLast(toAssignValue);
+				}
+				props.put( propertyName, oTmp); 
 			}
 				
 		}
