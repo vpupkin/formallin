@@ -1,0 +1,691 @@
+Content-Type: multipart/related; start=<op.mhtml.1324394114725.e6e36b7a0d3047ce@10.2.212.213>; boundary=----------j1NxfJbEv2oN5Q8ixdreMU
+Content-Location: http://139.91.183.30:9090/RDF/publications/state.html
+Subject: =?utf-8?Q?RDF=20Query=20Languages:=20A=20state-of-the-art?=
+MIME-Version: 1.0
+
+------------j1NxfJbEv2oN5Q8ixdreMU
+Content-Disposition: inline; filename=state.html
+Content-Type: text/html; charset=iso-8859-1; name=state.html
+Content-ID: <op.mhtml.1324394114725.e6e36b7a0d3047ce@10.2.212.213>
+Content-Location: http://139.91.183.30:9090/RDF/publications/state.html
+Content-Transfer-Encoding: 8bit
+
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win95; I) [Netscape]">
+   <title>RDF Query Languages: A state-of-the-art</title>
+</head>
+<body link="#0000FF">
+
+<center><font size=-2><a href="http://www.khelekore.org/rabbit/" target="_top">RabbIT</a> filtered this page.<A HREF="http://noproxy.139.91.183.30:9090/RDF/publications/state.html">unfiltered page</A></font></center><br><center><b>RDF Query Languages: A state-of-the-art</b>
+<p><i>Greg Karvounarakis</i>
+<p>Institute of Computer Science, FORTH,
+<br>Vassilika Vouton, P.O.Box 1385,
+<br>GR 711 10, Heraklion, Greece
+<br>and
+<br>Department of Computer Science,
+<br>University of Crete, GR 71409,
+<br>Heraklion, Greece</center>
+
+<p><br> <br> <p><b>&nbsp;&nbsp;&nbsp; 1. Introduction</b> <dir>Several
+approaches have been proposed, as far as querying RDF metadata is
+concerned. These approaches can be generally subdivided into two main
+categories:</dir>
+
+<ul>
+<li>
+The SQL/XQL style approach, viewing RDF metadata as
+a relational or XML database</li>
+
+<br>&nbsp;
+<li>
+Viewing the Web described by RDF metadata as a knowledge
+base and, thus, applying knowledge representation and reasoning techniques
+on RDF metadata.</li>
+</ul>
+
+<ol>The simple RDF Schema shown in figure 1 will be
+used throughout this report, in order to clarify the application of the
+proposed languages to "real" RDF descriptions.
+<br>&nbsp;
+<p><img SRC="state.gif" HSPACE=12 BORDER=0 height=359 width=479>
+<br>&nbsp;
+<br>&nbsp;</ol>
+<b>&nbsp;&nbsp;&nbsp; 2. Database approach
+– RDF Query Specification (IBM)</b>
+<ol>&nbsp;
+<br>This first approach, proposed by IBM, is based upon
+the RDF for XML Java package [1], created by the first. This tool allows
+one to create RDF objects, as defined in the context of this work, by reading
+XML encoded RDF metadata (using the syntax employed in the first phase
+of the creation of RDF). It then provides an API to perform several operations
+on objects of this class.</ol>
+
+<dir>Based on this platform, they created a query language
+[2] in order to be able to query resources, described in these RDF instances.
+The main constructs of this language are:</dir>
+
+<ul>
+<ul>
+<li>
+<b>Select, From</b>: as in common SQL for relational
+databases, these tags are used to define views of the result and declare
+the domain on which the query is performed. The "From" tag defines a container,
+as defined in the RDF Model, which consists of URIs to the metadata descriptions
+to be queried.</li>
+</ul>
+</ul>
+
+<dir>
+<dir>Suppose that the URL http://www/people#PersonsList
+specifies a collection of Resources of Persons as defined in the schema
+above. The simplest example could be the following:
+<br><tt>&lt;rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;rdfq:From eachResource="http://www/people#PersonsList"/></tt>
+<br><tt>&lt;/rdfquery></tt>
+<br>This query returns all resources from the specified
+collection.
+<p>We could also perform the following query (where
+the value of the "properties" attribute is a space-separated list of the
+names of the properties that should be selected in the projection):
+<br><tt>&lt;rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;rdfq:From eachResource="http://www/people#PersonsList"
+></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;rdfq:Select
+properties="Name cooperatesWith"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:Property name="Publications"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/rdfq:Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;/rdfq:From></tt>
+<br><tt>&lt;/rdfquery></tt></dir>
+</dir>
+
+<dir>
+<dir>The result of this query is a list of resources
+that have a property called "Publications", with the properties "Name"
+and "cooperatesWith" and their values.</dir>
+</dir>
+
+<ul>
+<ul>
+<li>
+<b>Condition</b>: This tag is used to describe conditions
+on the values of properties (similar to the conditions in the "where" clause
+of common SQL.</li>
+</ul>
+</ul>
+
+<dir>
+<dir>Example:</dir>
+<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;From eachResource="http://www/people#PersonsList" ></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Select properties="Name cooperatesWith"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;equals></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Property name="Name" /></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdf:String>Neel Sundaresan&lt;/rdf:String></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/equals></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/From></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/rdfquery></tt>
+<dir>
+<li>
+<b>Path expressions</b>: This construct can be used
+in order to navigate across properties in an RDF graph.</li>
+</dir>
+</dir>
+
+<dir>
+<dir>The following query can be used to get all resources,
+which have a property named "Publications", the value of which has a property
+called "Year", which satisfies the given condition.</dir>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<tt>&lt;rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;From eachResource="http://www/people#PersonsList" ></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;greaterThan></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Property path="Publications/Year"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdf:Integer>1995&lt;/rdf:Integer></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/greaterThan></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/From></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/rdfquery></tt>
+<br>&nbsp;
+<br>&nbsp;
+<dir>
+<li>
+<b>Union, Intersection and Difference: </b>These
+are used in order to perform the corresponding algebraic set operations
+on result sets.</li>
+</dir>
+</dir>
+
+<dir>
+<dir>For example, one can issue the following query:
+<p><tt>&lt;rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;Union></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;From
+eachResource="http://www/people/neel"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Property name="Publications"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/From></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;From
+eachResource="http://www/people/Ashok"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Property name="Publications"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/From></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;/Union></tt>
+<br><tt>&lt;/rdfquery></tt>
+<p>Union is used in order to join the results of the
+two queries in a set.
+<br>&nbsp;
+<li>
+<b>Group, Order: </b>These constructs allow as
+to group or sort results, according to the value of a property.</li>
+</dir>
+</dir>
+
+<dir>
+<dir>For example, we can group the resources returned by previous according
+to the year of publication:
+<p><tt>&lt;rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;From eachResource="http://www/people/neel"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Group></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Property path="Publications/Year"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/Group></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;/From></tt>
+<br><tt>&lt;/rdfquery></tt></dir>
+</dir>
+
+<ul>
+<ul>
+<li>
+<b>Quantifiers: </b>The quantifiers forAll and
+exists are defined in this language, in order to support queries based
+on the corresponding quantification operators.</li>
+</ul>
+</ul>
+
+<dir>
+<dir>If, for instance we want to get all those researchers that have at
+least one publication in 1998, we can issue the following query:
+<p><tt>&lt;rdfq:rdfquery></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;rdfq:From eachResource="Almaden_Researchers"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;rdfq:Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:Quantifier type="exists" var="x"></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:Property path="Publications"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:equals></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:Property var-ref="x" name="Year"/></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdf:Integer>1998&lt;/rdf:Integer></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/rdfq:equals></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/rdfq:Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/rdfq:Quantifier></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfq:Condition></tt>
+<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/rdfq:Select></tt>
+<br><tt>&nbsp;&nbsp;&nbsp; &lt;/rdfq:From></tt>
+<br><tt>&lt;/rdfq:rdfquery></tt></dir>
+</dir>
+
+<dir>
+<dir>The variable x takes all values from the collection
+(the resources which have a property named "Publications") and then we
+use var-ref to reference the values of this variable.</dir>
+
+<p><br>Therefore, this QL provides all the constructs
+that are necessary in order to query specific documents that are described
+by specific schemata, that is we know in advance which properties each
+resource has, and what the relations between resources are. The problem
+in this approach is that it is not actually what one should expect from
+an RDF or generally metadata query language. It is actually a transformation
+of the XQL, in order to be able to query RDF descriptions. It is actually
+a language for querying data, as XQL instead of metadata. This should be
+considered normal, since the authors seem to view RDF just as an XML instance,
+not as a metadata model that can be encoded using XML syntax for interoperability
+purposes. This is obvious by the way they model RDF, according to the Document
+Object Model (DOM), which is used in order to model the structure of XML
+documents.
+<p>Moreover, this approach disregards RDF schema relationships,
+on which RDF instance documents are based, therefore losing a great deal
+of the semantics of the descriptions. For example, if there is a description
+of a "Person", as defined in the schema above, and we know that a "Researcher"
+cooperatesWith them, we cannot infer that the "Person" is also a "Researcher",
+as the range constraint in the schema implies. They only consider vocabulary
+specific inferencing as a future research direction and try to deal with
+primitive database types that could be supported in the future, which is
+more of an XML syntax matter than a metadata description problem.
+<br>&nbsp;</dir>
+<b>&nbsp;&nbsp;&nbsp; 3. Viewing the Web
+as a knowledge base (W3C related)</b>
+<dir>This second approach is mostly supported by the
+W3C RDF working group and other related researchers, as well as the founders
+of RDF itself. It seems that this is the approach of researchers coming
+from a different community (the knowledge representation community) but
+it could also be that this approach seems more likely to achieve the initial
+goals for which RDF was initially proposed. Since the initial motivation
+that led to RDF was the need to represent <i>human-readable</i> but also
+<i>machine-understandable</i>
+semantics, it seems obvious that we should use this representation to do
+something clever with it. In this context, the following requirements for
+an RDF query language can be identified ([3],[4]):</dir>
+
+<ul>
+<ul>
+<li>
+The underlying repository, in which the RDF descriptions
+are stored, should support the expressive power of the RDF model (assertions),
+as well as of the RDF Schemata (class and property hierarchies).</li>
+
+<li>
+The query language should abstract from the RDF syntax
+specifications, that is the XML encoding of RDF metadata.</li>
+
+<li>
+Such a query language should also provide several facilities
+– ranging from simple property-value queries, path traversal based on the
+RDF graph model, to complex Datalog like queries. Several categories of
+deductions/inferences can be envisaged:</li>
+
+<li>
+Subsumption between classes and/or properties not explicitly
+stated in an RDF Schema using rdfs:subClassOf and rdfs:subPropertyOf.</li>
+
+<li>
+Classification of resources: if we know that the domain
+of a property is of a specific class, we could infer that a resource that
+appears in a metadata instance, having this property, is actually an instance
+of this class.</li>
+
+<li>
+Inverse references fulfilling: If, for example, we know
+that Researcher1 has Publication Paper1, then we could infer that Paper1
+has author Researcher1.</li>
+
+<li>
+Automatic Query Expansion in order to explore generalization/
+specialization (broader term, narrower term and synonym) relations between
+property values.</li>
+</ul>
+</ul>
+
+<dir>Based on these initial ideas and specifications,
+two query and inference languages for RDF have been proposed:</dir>
+
+<ol><b>3.1 Query and Inferencing Service for RDF ([4],
+[5])</b></ol>
+
+<dir>
+<dir>This approach is practically trying to achieve the aims outlined above,
+by mapping RDF metadata to Frame Logic. By loading the triples extracted
+from the RDF metadata into an F-logic knowledge base, according to some
+schema definitions extracted from the included RDF Schemata, they organize
+the RDF descriptions as a knowledge base. For example, our sample schema
+would be loaded in F-logic by the following F-logic statements (manually
+in the current implementation):</dir>
+</dir>
+
+<ul>
+<ul>
+<li>
+Class definitions:</li>
+</ul>
+</ul>
+
+<dir>
+<dir>
+<dir><tt>Person:: Object.</tt>
+<br><tt>Researcher:: Person.</tt>
+<br><tt>Paper:: Object.</tt></dir>
+</dir>
+</dir>
+
+<ul>
+<ul>
+<li>
+Attribute (property) definitions:</li>
+</ul>
+</ul>
+
+<dir>
+<dir>
+<dir><tt>Person[Name=>> Literal].</tt>
+<br><tt>Reseacher[Publications=>> Paper;</tt>
+<br><tt>CooperatesWith=>> Researcher].</tt>
+<br><tt>Paper[Year=>> Integer].</tt></dir>
+For instance, in order to perform the query "give me
+all the resources that have a property Publications", we should say in
+F-logic:
+<br>&nbsp;
+<dir><tt>FORALL X, Y &lt;- X[Publication->>Y].</tt></dir>
+Depending on schema definitions, one can perform at
+least basic inferencing on the RDF descriptions. For example, class hierarchies
+expressed in F-logic rules, allow inferencing based on sub-classing or
+refining queries by eliminating irrelevant information according to the
+schema that would otherwise match the query. Constraints in values of
+properties can also be represented in this way, allowing such a type of
+validation and inferencing on incomplete information.
+<p>For example, according to the schema we know that:</dir>
+</dir>
+<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Researcher:: Person[Publication=>>Paper].</tt>
+<dir>
+<dir>Therefore, according to the semantics of F-logic,
+we can imply that all persons that have publications are instances of the
+class "Researcher", even if this fact is not explicitly stated in the RDF
+descriptions.
+<p>Moreover, we can explicitly add inference rules.
+For example, we know that a Researcher only cooperatesWith another Researcher,
+so we can add the inference rule:
+<p><tt>&nbsp;&nbsp;&nbsp; FORALL Person1, Person2</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Person1:Researcher[cooperatesWith->>Person2]
+&lt;-</tt>
+<br><tt>&nbsp;&nbsp;&nbsp; Person2:Researcher[cooperatesWith->>Person1]</tt>
+<p>This means that if we know that Person2 is a Researcher
+and cooperatesWith Person1, then we can imply that Person1 is a Researcher
+and cooperatesWith Person2, even if this is not implicitly stated. Thus,
+if we then submit a query, requesting all instances of the class Researcher,
+according to this rule, we are also going to get all resources that a Researcher
+cooperatesWith.
+<p>Another type of inference proposed is automatic query
+expansion, as in the example of the Classification Scheme Mapping [5].
+Moreover, F-logic syntax for the query language seems more user friendly,
+compared to the RDF encoding, while recursive queries can be performed
+using the same, F-logic style, query language on the resulting knowledge
+base. In a similar way, any deductive database (as is F-logic) can be used
+in the same way.
+<p>Finally, F-logic allows us to also perform some kind
+of queries on the schema. For example, one can request all Researchers
+that have a property with the value "Christophides". In our case this would
+mean that either the name or the cooperatesWith property would have that
+value. This would be encoded in F-logic as:</dir>
+</dir>
+<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+FORALL Res, Prop, T &lt;- Res:Researcher[Prop=>>T] AND 
+<BR> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Res[Prop->>"Christophides"]</tt>
+<dir>
+<dir>The supposed advantage of SiLRI, the tool created
+by this working group at W3C, is that it provides a lightweight and portable
+implementation of the inference engine described above, including the functionality
+of F-logic. Therefore, it is probably suitable for mobile code (e.g. intelligent
+agent applications) implementations.
+<p>However, there are some problems with this approach.
+Firstly, not all RDF expressions can be directly expressed using F-logic.
+For example, no attempt has been done do describe RDF Containers, as bags
+etc, or reified statements can be represented, syntactically and semantically.
+Moreover, this approach is a common object-oriented one, not regarding
+properties as first-class objects, as the RDF model suggests. Consequently,
+no inference can be performed based on property hierarchies.
+<p>Furthemore, inference is based upon manually added
+inference rules; no attempt has been made to define the semantics of RDF
+itself. No generic inference facilities have been investigated, based on
+RDF/RDFS semantics, which would apply to any schema instance. What was
+actually the aim of this work was to be able to load RDF metadata annotations
+in Ontobroker [7, 8], which uses F-logic as its internal representation
+language, since the annotation language proposed by Ontobroker is not widely
+supported. Moreover, since Ontobroker presumes the existence of a predefined
+central ontology for each community, the need to be able to load individually
+created RDF Schema instances is less important to them; all information
+providers are likely to follow the organization of the ontology. Therefore,
+specific inference rules are part of the central ontology.
+<br>&nbsp;</dir>
+</dir>
+
+<ol><b>3.2 Metalog ([6])</b></ol>
+
+<dir>
+<dir>This approach, also related to the W3C RDF working group, is similar
+at many points to the one described above. It attempts to allow inferencing
+to be performed on RDF metadata, using knowledge representation and reasoning
+techniques. However, this approach is closer to RDF model's <i>property-centric</i>
+approach, as properties in the RDF model are actually binary relations
+between resources.
+<p>The added value of this proposed system is that it abstracts even more
+the query language from the syntax, defining the query language specifications
+in a higher level. By identifying the correspondence between RDF statements
+(triples) and predicates in logic, one can view a query language in RDF
+at a logical layer, allowing any logical relationship to be expressed.
+What the Metalog approach suggests is an extended RDF Metalog schema, with
+the addition of logical connectors (and, or, not, implies) and variables
+to RDF Schema. This way, one can encode inference rules in RDF schema instances.
+<p>At this level, one can use the full expressive power of first-order
+predicate calculus in order to describe the schema of the query language.
+In order to create a computationally feasible implementation, one can then
+use a subset of the predicate calculus, as is logic programming. The implementation
+of Metalog suggests the use of Datalog. This approach has the obvious advantage
+of allowing the designers to directly address the matter that arises with
+the trade-off between expressive power and computational efficiency.
+<p>According to this approach, apart from the schema definition:
+<br><tt>&nbsp;&nbsp;&nbsp; Publication(X,Y) => in(X, "Researcher")</tt>
+<p>one can add rules in the schema as:
+<br>&nbsp;&nbsp;&nbsp; (<tt>Publication(X,Y) and Year(Y,Z))
+=> gotDegreeBefore(X,Z)</tt></dir>
+</dir>
+
+<dir>
+<dir>Then we are able to get all Researchers, who got
+their degree before a specified year:
+<br><tt>&nbsp;&nbsp;&nbsp; GotDegreeBefore(X, 1990).</tt></dir>
+</dir>
+
+<ol>
+<dir>Another point that is highlighted in this approach
+is the need for a user-friendly interface for the query language, actually
+proposing the use of natural language to express queries. The language
+proposed maintains all the expressive power of the underlying Metalog schema,
+and also encapsulates inferencing facilities, together with the ability
+to express RDF descriptions of any kind.
+<p>However, no actual query language is proposed. What
+Metalog actually suggests is a way to embed inference rules by logical
+operators in RDF Schemas. Moreover, the architecture of such a system,
+using Metalog and binary predicate calculus for querying RDF is not obvious.
+Finally, an implementation of this approach is still to be presented, in
+order to clarify the ideas of the authors in practice.
+<br>&nbsp;</dir>
+<b>4. Conclusion</b>
+<p>Studying these approaches, one can outline the requirements of a query
+language for RDF. The approaches that draw ideas from the knowledge representation
+and reasoning communities seem to be closer to the initial aims that led
+to the creation of RDF. However, it is obvious that such reasoning cannot
+be based on RDF. It would probably be more appropriate to define an abstract
+logical model for the query language, in terms of the RDF Graph Model.
+The first approach, which points to that direction, defining path expressions,
+has the drawback of being restricted to data queries, while it would be
+desirable to query the schema itself. One should also consider the Schema
+Discovery and Translation issue (as described in [9]): considering the
+discovery part trivial, there should be the ability to understand RDF Schemas
+and derive information out of hierarchical relations and constraints, as
+well as information that is implied through inheritance.
+<p><b> 5. Bibliography</b>
+<p>[1] N. Sundaresan, RDF for XML, http://www.alphaworks.ibm.com
+<p>[2] A. Malhotra, N. Sundaresan , RDF Query Specification, <i>W3C Query
+Languages Workshop </i>(1998),
+<p>[3] R. V. Guha, O. Lassila, E. Miller, D. Brickley,
+Enabling Inferencing, <i>W3C Query Languages Workshop </i>(1998), <a href="http://purl.org/net/rdf/papers/QL98-enabling">http://purl.org/net/rdf/papers/QL98-enabling</a>
+<p>[4] S. Decker, D. Brickley, J. Saarela, J. Angele,
+A Query and Inference Service for RDF, <i>W3C Query Languages Workshop
+</i>(1998),
+<a href="http://purl.org/net/rdf/papers/QL98-queryservice">http://purl.org/net/rdf/papers/QL98-queryservice</a>
+<p>[5] D. Brickley, S. Decker, J. Saarela, Classification
+Scheme Mapping a simple demonstration using RDFIE and SiRPAC, <a href="http://purl.org/net/rdf/papers/classmap/">http://purl.org/net/rdf/papers/classmap/</a>
+<p>[6] M. Marchiori, J. Saarela, Query + Metadata +
+Logic = Metalog, <a href="http://www.w3.org/TandS/QL/QL98/pp/metalog">http://www.w3.org/TandS/QL/QL98/pp/metalog</a>
+<p>[7] D. Fensel, J. Angele, S. Decker, M. Erdmann,
+H.P. Schnurr, R. Studer, A. Witt, On2broker: Improving Access to Information
+Sources at the WWW <a href="http://www.aifb.uni-karlsruhe.de/WBS/broker/inhalt-paper.html">http://www.aifb.uni-karlsruhe.de/WBS/broker/inhalt-paper.html</a>
+<p>[8] V. R. Benjamins, D. Fensel, Community is Knowledge
+in (KA)2, <a href="http://www.aifb.uni-karlsruhe.de/WBS/broker/inhalt-paper.html">http://www.aifb.uni-karlsruhe.de/WBS/broker/inhalt-paper.html</a>
+<br>&nbsp;
+<br>&nbsp;
+<p>[9] P. Valkenburg, D. Brickley, Query Language Issues
+in a Distributed Indexing Environment, <i>W3C Query Languages Workshop
+</i>(1998)
+<a href="http://purl.org/net/rdf/papers/QL98-distributed">http://purl.org/net/rdf/papers/QL98-distributed</a>           
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;</ol>
+
+</body>
+</html> 
+
+------------j1NxfJbEv2oN5Q8ixdreMU
+Content-Disposition: inline; filename=state.gif
+Content-Type: image/gif; name=state.gif
+Content-Location: http://139.91.183.30:9090/RDF/publications/state.gif
+Content-Transfer-Encoding: Base64
+
+R0lGODdh3wFnAfcAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAADfAWcBQAj/AAMIHEiwoMGDCBMqXMiw
+ocOHECNKnEixosWLGDNq3Mixo8ePIEOKHEmypMmTKFOqXMmypcuXMGPKnEmzps2b
+CQHo3Mmzp06cQIMKHUq0KMafRZEaXcq0qdOnBwFAhSh1qtWrWLNmrKqVIteuYCv6
+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
+mZzK6V8BAQA7
+
+------------j1NxfJbEv2oN5Q8ixdreMU--
