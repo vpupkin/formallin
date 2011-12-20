@@ -1,47 +1,90 @@
+/**
+ * 
+ */
 package gform;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-/** 
- * <b>Description:TODO</b>
- * @author      vipup<br>
- * <br>
- * <b>Copyright:</b>     Copyright (c) 2006-2008 Monster AG <br>
- * <b>Company:</b>       Monster AG  <br>
+import java.sql.SQLException;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+/**
+ * @author Administrador
  * 
- * Creation:  30.11.2011::15:25:33<br> 
  */
-public class DBSchemaTest extends TestCase {
-
-	protected void setUp() throws Exception {
-		super.setUp();
+public class DBSchemaTest {
+	
+	private static Logger log = Logger.getLogger(DBSchemaTest.class.getName());
+	DBSchema db;
+	Table testTable;
+	
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
 	}
 
-	public void testIsTableExists() {
-		fail("Not yet implemented");
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		log.info("setUp");
+		db = new DBSchema("gescsidiomas");
+		testTable = new Table("testTable");
 	}
 
-	public void testCreateTable() {
-		fail("Not yet implemented");
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		log.info("tearDown");
+		if(db.isTableExists(testTable.getName())){
+			db.dropTable(testTable);
+		}
 	}
 
-	public void testChangeTable() {
-		fail("Not yet implemented");
-	}
+	
+	/**
+	 * Test method for {@link gform.DBSchema#createTable(java.lang.String)}.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 */
+	@Test
+	public void testCreateTable() throws ClassNotFoundException, SQLException {
+		log.info("createTable");
+		
+		assertFalse(db.isTableExists(testTable.getName()));
+		
+		Column idColumn = new Column("id", SQLType.INT, "10");
+		idColumn.setKey(true);
+		idColumn.setAuto(true);
+		idColumn.setForingKey(true);
+		idColumn.setpKeyName("idCliente");
+		idColumn.setpKeyTable("cliente");
+		
+		testTable.addColumn(idColumn);
+		
+		
+		db.createTable(testTable);
+		
+		assertTrue(db.isTableExists("testTable"));
 
-	public void testDropTable() {
-		fail("Not yet implemented");
 	}
-
-	public void testParseTable() {
-		fail("Not yet implemented");
-	}
-
 }
-
-
- 
