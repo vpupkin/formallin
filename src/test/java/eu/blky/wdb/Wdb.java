@@ -34,9 +34,9 @@ public class Wdb extends LinkedList<Wdb>{
 				Wdb e = nextProp.get(i);
 				toPrint.add(e);
 			}
-			System.out.println("<toprint hash="+this.id+" id=\'"+this.oName+"\'>");
-			System.out.println(toPrint);
-			System.out.println("</toprint>");
+//			System.out.println("<toprint hash="+this.id+" id=\'"+this.oName+"\'>");
+//			System.out.println(toPrint);
+//			System.out.println("</toprint>");
 			sb .append(EOP);
 			sb .append("\n\t");
 			sb.append(nameOfProp);
@@ -121,6 +121,27 @@ public class Wdb extends LinkedList<Wdb>{
 		this.setProperty(propertyName, valuePar );
 	}
 
+	public Wdb getProperty(String key) {
+		Wdb theOne = this.props.get(key);
+		if (this.size()==0) {
+			
+			return theOne;
+		} else{
+			Wdb retval = new Wdb(key);
+			retval.setProperty(key, theOne);
+			retval.add(theOne);
+			for (int i=0;i<this.size();i++){
+				Wdb theNext = this.get(i);
+				Wdb oTmp = theNext.getProperty(key) ;
+				if (oTmp!=null){
+					retval.add(oTmp);
+				}
+			}
+			return retval ;
+		}
+	}
+	
+ 
 }
 
 
