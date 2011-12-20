@@ -1,8 +1,10 @@
 package eu.blky.wdb;
  
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map; 
 import java.util.Set;
 
@@ -19,16 +21,38 @@ public class Wdb extends LinkedList<Wdb>{
 
 	private String oName;
 	public String toString(){
-		
-		String propsAsString = props.toString();
 		StringBuffer sb = new StringBuffer();
-		for (String s:propsAsString .split("\n")){
-			sb .append("\n\t");
-			sb .append(s);
+		String EOP  = "";
+		for (String nameOfProp:this.props.keySet()){
+			Wdb nextProp = this.props.get(nameOfProp);
+			List<Wdb> toPrint = new ArrayList<Wdb>();  
+			toPrint .add(nextProp);
+			for (int i=0;i<nextProp.size();i++){
+				toPrint.add(nextProp.get(i));
+			}
 			
+			sb .append(EOP);
+			sb .append("\n\t");
+			sb.append(nameOfProp); 
+			String prefix = "=\u0060";
+			String EOV = "";
+			for(Wdb nextWdb:toPrint){
+				sb.append(EOV);
+				sb.append(prefix);
+				String propsAsString = nextWdb.toString();
+				for (String s:propsAsString .split("\n")){  
+					sb .append(s); 
+					EOV = "\u00B4\n\t";
+					sb.append(EOV);
+				} 
+				prefix =  ";\n\t\u0060";
+				
+			} 
+			EOP = (",");
 		}
-		propsAsString = sb.toString();
-		return oName+":"+this.categories+"={"+propsAsString+"}";
+		String catAsStr = this.categories.size()>0?":"+this.categories.toString():"";
+		String sbAsString = sb.toString().length()>0?"={"+sb+"}":"";
+		return oName+catAsStr+sbAsString;
 	}
 
 	public Wdb(String oName) {
