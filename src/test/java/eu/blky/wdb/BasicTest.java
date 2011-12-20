@@ -51,18 +51,19 @@ public class BasicTest extends TestCase {
 		Wdb  book = new Wdb ("Book");
 		book.setProperty("Title", "Don Quijote");
 		book.setProperty("Author", author);
+		System.out.println(book);
 		Wdb  book2 = new Wdb ("Book");
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
+		System.out.println(book2);
 		
 		Wdb  rack = new Wdb ("Shelf");
-		rack.setProperty("Color", "red");
+		System.out.println(rack);
 		rack.setProperty("book", book);
+		System.out.println(rack);
 		rack.setProperty("book", book2);
-		 
-		 
-		
-		
+		System.out.println(rack);
+		rack.setProperty("Color", "red"); 
 		System.out.println(rack);
 	}
 }

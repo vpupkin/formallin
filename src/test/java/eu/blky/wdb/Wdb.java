@@ -20,21 +20,29 @@ import java.util.Set;
 public class Wdb extends LinkedList<Wdb>{
 
 	private String oName;
+	private static long cluniqueId=0;
+	private long id =cluniqueId++;
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		String EOP  = "";
+		
 		for (String nameOfProp:this.props.keySet()){
-			Wdb nextProp = this.props.get(nameOfProp);
 			List<Wdb> toPrint = new ArrayList<Wdb>();  
+			Wdb nextProp = this.props.get(nameOfProp); 
 			toPrint .add(nextProp);
 			for (int i=0;i<nextProp.size();i++){
-				toPrint.add(nextProp.get(i));
+				Wdb e = nextProp.get(i);
+				toPrint.add(e);
 			}
-			
+			System.out.println("<toprint hash="+this.id+" id=\'"+this.oName+"\'>");
+			System.out.println(toPrint);
+			System.out.println("</toprint>");
 			sb .append(EOP);
 			sb .append("\n\t");
-			sb.append(nameOfProp); 
-			String prefix = "=\u0060";
+			sb.append(nameOfProp);
+			String LLL = "[";// ` BEGIN {{{ [ <  6  (:
+			String RRR = "]";// ´ end   }}} ] >  9  :) 
+			String prefix = "==\n\t"+LLL;
 			String EOV = "";
 			for(Wdb nextWdb:toPrint){
 				sb.append(EOV);
@@ -42,10 +50,13 @@ public class Wdb extends LinkedList<Wdb>{
 				String propsAsString = nextWdb.toString();
 				for (String s:propsAsString .split("\n")){  
 					sb .append(s); 
-					EOV = "\u00B4\n\t";
+					EOV =  "\n\t";
 					sb.append(EOV);
 				} 
-				prefix =  ";\n\t\u0060";
+
+				EOV = RRR+"";
+				sb.append(EOV);
+				prefix =  ";\n\t"+LLL;
 				
 			} 
 			EOP = (",");
@@ -80,13 +91,12 @@ public class Wdb extends LinkedList<Wdb>{
 				if (oTmp == null){
 					oTmp = toAssignValue;
 				}else{
-					oTmp.addLast(toAssignValue);
+					oTmp.add(toAssignValue);
 				}
 				props.put( propertyName, oTmp); 
 			}
 				
-		}
-		this.setProperty(propertyName,""+ valuePar);
+		} 
 	}
 	private int diffCategory(Wdb a, Wdb b) {
 		int retval = 0;
