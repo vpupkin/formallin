@@ -102,9 +102,9 @@ public class Wdb extends LinkedList<Wdb>{
 		int retval = 0;
 		Set<Category> categoriesA = a.getCategories();
 		Set<Category> categoriesB = b.getCategories();
-		for (Category cA:categoriesA)
+		for (Category cA:categoriesA){
 			if(categoriesB.contains(cA))retval++;
-			
+		}
 		return retval;
 	}
 	
