@@ -24,10 +24,7 @@ public class BasicTest extends TestCase {
 	public void test0() {
 		Wdb author = new Wdb ("Author");
 		author.setProperty("First name", "Cervantes");
-		author.addProperty("Second name", "Miguel");
-
-		 
-		
+		author.addProperty("Second name", "Miguel"); 
 		System.out.println(author);
 	}
 	
@@ -77,7 +74,7 @@ public class BasicTest extends TestCase {
 		Wdb  book = new Wdb ("Book");
 		book.setProperty("Title", "Don Quijote");
 		book.setProperty("Author", author);
-		System.out.println(book);
+//		System.out.println(book);
 		Wdb  book2 = new Wdb ("Book");
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
@@ -97,6 +94,40 @@ public class BasicTest extends TestCase {
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles!
 //		System.out.println(titles);
+		assertEquals( titles.size(),2 );
+		 
+	}
+	
+	
+	
+	public void test2ndCategory() {
+		Wdb author = new Wdb ("Author");
+		author.setProperty("First name", "Cervantes");
+		author.addProperty("Second name", "Miguel");
+		
+		Category bookCat = new Category("book");
+		Category proseCat = new Category(bookCat, "prose");
+		
+		Wdb  book = new Wdb ("Book");
+		book.addCategory(proseCat);
+		book.setProperty("Title", "Don Quijote");
+		book.setProperty("Author", author); 
+		Wdb  book2 = new Wdb ("Book");
+		book2.addCategory(bookCat);
+		book2.setProperty("Title", "Kornelia");
+		book2.setProperty("Author", author);
+		assertEquals( book2.getProperty("Author").getProperty("First name").toString(), "Cervantes" );
+		assertEquals( book .getProperty("Title").toString(), "Don Quijote" );
+		
+		Wdb  rack = new Wdb ("Shelf"); 
+		rack.setProperty("book", book); 
+		rack.setProperty("book", book2); 
+		rack.setProperty("Color", "red");  
+		System.out.println(rack);
+		
+		assertEquals( rack .getProperty("Color").toString(), "red" );
+		Wdb books = rack .getProperty("book");// here should be two books! 
+		Wdb titles = books.getProperty("Title");// here must be two titles! 
 		assertEquals( titles.size(),2 );
 		 
 	}
