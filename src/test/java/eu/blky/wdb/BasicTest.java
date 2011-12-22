@@ -80,8 +80,8 @@ public class BasicTest extends TestCase {
 		Wdb  book2 = new Wdb ("Book");
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
-		assertEquals( book2.getProperty("Author").getProperty("First name").toString(), "Cervantes" );
-		assertEquals( book .getProperty("Title").toString(), "Don Quijote" );
+		assertEquals( book2.getProperty("Author").getProperty("First name")._() , "Cervantes" );
+		assertEquals( book .getProperty("Title")._(), "Don Quijote" );
 		
 		Wdb  rack = new Wdb ("Shelf");
 //		System.out.println(rack);
@@ -92,7 +92,7 @@ public class BasicTest extends TestCase {
 		rack.setProperty("Color", "red"); 
 //		System.out.println(rack);
 		
-		assertEquals( rack .getProperty("Color").toString(), "red" );
+		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles!
 //		System.out.println(titles);
@@ -118,8 +118,8 @@ public class BasicTest extends TestCase {
 		book2.addCategory(bookCat);
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
-		assertEquals( book2.getProperty("Author").getProperty("First name").toString(), "Cervantes" );
-		assertEquals( book .getProperty("Title").toString(), "Don Quijote" );
+		assertEquals( book2.getProperty("Author").getProperty("First name")._(), "Cervantes" );
+		assertEquals( book .getProperty("Title")._(), "Don Quijote" );
 		
 		Wdb  rack = new Wdb ("Shelf"); 
 		rack.setProperty("book", book); 
@@ -127,7 +127,7 @@ public class BasicTest extends TestCase {
 		rack.setProperty("Color", "red");  
 		System.out.println(rack);
 		
-		assertEquals( rack .getProperty("Color").toString(), "red" );
+		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
 		System.out.println(titles);
@@ -154,8 +154,9 @@ public class BasicTest extends TestCase {
 		book2.addCategory(bookCat);
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
-		assertEquals( book2.getProperty("Author").getProperty("First name").toString(), "Cervantes" );
-		assertEquals( book .getProperty("Title").toString(), "Don Quijote" );
+		Wdb propertyFN = book2.getProperty("Author").getProperty("First name");
+		assertEquals( propertyFN._(), "Cervantes" );
+		assertEquals( book .getProperty("Title")._(), "Don Quijote" );
 		
 		Wdb  rack = new Wdb ("Shelf"); 
 		rack.setProperty("book", book); 
@@ -164,7 +165,7 @@ public class BasicTest extends TestCase {
 		XStream x=new XStream();
 		System.out.println(x.toXML(rack));
 		
-		assertEquals( rack .getProperty("Color").toString(), "red" );
+		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
 		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");

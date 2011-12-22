@@ -123,11 +123,13 @@ public class Wdb extends LinkedList<Wdb>{
 
 	public Wdb getProperty(String key) {
 		Wdb theOne = this.props.get(key);
+		theOne .setProperty("X-Get", key);
 		if (this.size()==0) {
 			
 			return theOne;
 		} else{
 			Wdb retval = new Wdb(key);
+			
 			retval.setProperty(key, theOne);
 			retval.add(theOne);
 			for (int i=0;i<this.size();i++){
@@ -139,6 +141,11 @@ public class Wdb extends LinkedList<Wdb>{
 			}
 			return retval ;
 		}
+	}
+
+	public String _() { 
+		return oName;
+		
 	}
 	
  
