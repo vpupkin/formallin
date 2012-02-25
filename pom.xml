@@ -23,6 +23,12 @@
 			</plugin>
 			</plugins></build>
 	<dependencies>
+	
+			<dependency>
+			<groupId>cc.co.llabor</groupId>
+			<artifactId>cachefs</artifactId>
+			<version>0.0.13-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
