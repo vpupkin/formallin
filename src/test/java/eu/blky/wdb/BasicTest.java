@@ -1,5 +1,7 @@
 package eu.blky.wdb;
 
+import java.util.List;
+
 import com.thoughtworks.xstream.XStream;
 
 import junit.framework.TestCase;
@@ -82,6 +84,7 @@ public class BasicTest extends TestCase {
 		book2.setProperty("Author", author);
 		assertEquals( book2.getProperty("Author").getProperty("First name")._() , "Cervantes" );
 		assertEquals( book .getProperty("Title")._(), "Don Quijote" );
+
 		
 		Wdb  rack = new Wdb ("Shelf");
 //		System.out.println(rack);
@@ -94,10 +97,10 @@ public class BasicTest extends TestCase {
 		
 		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
-		Wdb titles = books.getProperty("Title");// here must be two titles!
+		assertEquals( books.size(),2 );	 
+		Wdb titles = rack.getProperty("Title");// here must be no titles!
 //		System.out.println(titles);
-		assertEquals( titles.size(),2 );
-		 
+		assertEquals( titles , null );	 
 	}
 	
 	
@@ -132,6 +135,9 @@ public class BasicTest extends TestCase {
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
 		System.out.println(titles);
 		assertEquals( titles.size(),2 );
+		titles = books.getProperty("Title");// here must be two titles! 
+		
+		assertEquals( titles.size(),3 ); // TODO WTF!?
 		 
 	}
 	
@@ -172,6 +178,107 @@ public class BasicTest extends TestCase {
 		System.out.println(x.toXML(titles));
 		assertEquals( titles.size(),2 );
 		 
+	}
+	
+	
+	
+
+	public void testDDBO(){
+	 	WDBOService ddboService = WDBOService.getInstance();
+		
+		Category category1 = ddboService.createCategory("Author");
+		
+		List  categories = ddboService.getCategories();
+		assertEquals(""+categories, 1, categories.size());
+		
+		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
+		translator.addProperty("First name", "Ivanov");
+		translator.addProperty("Second name", "Sergey");
+		translator.addProperty("role", "translator"); 
+		translator.addCategory(category1) ; 
+				
+		
+		for (Wdb o :ddboService.getObjects()){
+			ddboService.remove(o);
+		}
+		
+		ddboService.flush(translator);		
+		ddboService.flush(translator);
+		
+		assertEquals(2, ddboService.getObjects().size());
+		assertEquals(2, ddboService.getObjects("Author").size());
+ 
+	}	
+	/**
+	 * 
+	 */
+
+	public void testCreateWdbo(){
+		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
+		translator.addProperty("First name", "Ivanov");
+		translator.addProperty("Second name", "Sergey");
+		translator.addProperty("role", "translator"); 
+		System.out.println(translator); 
+	 	
+		Wdb propertiesTmp = translator.getProperties("First name");
+		String expected = propertiesTmp._();//propertiesTmp.get(0);
+		assertEquals(expected   , "Ivanov");
+		//translator.changeProperty("First name", 0, "Petrov");
+		translator.setProperty("First name",   "Petrov"); 
+		System.out.println(translator);
+		
+		Wdb  book = new Wdb ("Book");//new Category ("Book"));
+		book.addProperty("Title", "Don Quijote");
+		book.addProperty("CDU", "821.134.2-31\"16");
+		book.addProperty("CDU", "821.134.2-31\"17");
+		
+		assertEquals(book.getProperties("Title")._(), "Don Quijote");
+		assertEquals(book.getProperties("CDU").size(), 2);
+		assertEquals(book.getProperties("CDU")._(), "821.134.2-31\"16");
+		assertEquals(book.getProperties("CDU").get(0)._(), "821.134.2-31\"17");
+		
+		//book.addProperty("Author", author);
+		book.setProperty("Author", translator);
+		
+		System.out.println(book);
+		
+		Wdb translatorCopy = (Wdb) book.getProperties("Author");
+		//translatorCopy.changeProperty("role", 0, "ilustrator");
+		
+		System.out.println(translatorCopy); 
+ 
+
+	
+	}
+
+	public void testDDBO_100ms(){
+	 	WDBOService ddboService = WDBOService.getInstance();
+		
+		Category category1 = ddboService.createCategory("Author");
+		
+		List  categories = ddboService.getCategories();
+		assertEquals(""+categories, 1, categories.size());
+		
+		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
+		translator.addProperty("First name", "Ivanov");
+		translator.addProperty("Second name", "Sergey");
+		translator.addProperty("role", "translator"); 
+		translator.addCategory(category1) ; 
+				
+		
+		for (Wdb o :ddboService.getObjects()){
+			ddboService.remove(o);
+		}
+		int oCounter = 0;
+		for (long start=System.currentTimeMillis();System.currentTimeMillis()<(start+100);){
+			ddboService.flush(translator);
+			oCounter ++;
+			
+		}
+		
+		assertEquals(oCounter , ddboService.getObjects().size());
+		assertEquals(oCounter , ddboService.getObjects("Author").size());
+ 
 	}
 }
 

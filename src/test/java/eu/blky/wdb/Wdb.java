@@ -3,6 +3,7 @@ package eu.blky.wdb;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map; 
@@ -21,7 +22,7 @@ public class Wdb extends LinkedList<Wdb>{
 
 	private String oName;
 	private static long cluniqueId=0;
-	private long id =cluniqueId++;
+	private String id = ""+cluniqueId++;
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		String EOP  = "";
@@ -30,7 +31,7 @@ public class Wdb extends LinkedList<Wdb>{
 			List<Wdb> toPrint = new ArrayList<Wdb>();  
 			Wdb nextProp = this.props.get(nameOfProp); 
 			toPrint .add(nextProp);
-			for (int i=0;i<nextProp.size();i++){
+			for (int i=0;i<nextProp.size()-1;i++){
 				Wdb e = nextProp.get(i);
 				toPrint.add(e);
 			}
@@ -47,6 +48,7 @@ public class Wdb extends LinkedList<Wdb>{
 			for(Wdb nextWdb:toPrint){
 				sb.append(EOV);
 				sb.append(prefix);
+				if (nextWdb ==null) continue;
 				String propsAsString = nextWdb.toString();
 				for (String s:propsAsString .split("\n")){  
 					sb .append(s); 
@@ -74,14 +76,25 @@ public class Wdb extends LinkedList<Wdb>{
 	private Set<Category> categories = new HashSet<Category>();
 	
 	public void setProperty(String propertyName, String valuePar) {
-		props.put( propertyName, new Wdb(valuePar));
+		Wdb wdbTmp = new Wdb(valuePar);
+		setProperty(propertyName, wdbTmp);
 	}
-	public void setProperty(String propertyName, Object valuePar) {
+	
+	@Override
+	public int size(){
+		return super.size() +1;
+	}
+	
+	public void setProperty(String propertyName, Wdb valuePar) {
+//		Wdb oldTmp  = props.put( propertyName, wdbTmp );
+//		if (oldTmp!=null && !oldTmp.equals( wdbTmp )){
+//			wdbTmp  .add(oldTmp  );
+//		}		
 		if (valuePar == null )return; // TODO
 		if (this.toString().hashCode() == valuePar.toString().hashCode()){
-			throw new WdbException("Wrong Parent - (itself)_!");
+			throw new WdbException("Wrong Parent - (itself)_!"); // TODO
 		}
-		if (valuePar instanceof  Wdb) {
+		{ //if (valuePar instanceof  Wdb)
 			// compare own categories with valuePar
 			Wdb toAssignValue = (Wdb)valuePar;
 			if (1==2 && diffCategory(this,toAssignValue)==0){
@@ -112,8 +125,7 @@ public class Wdb extends LinkedList<Wdb>{
 		return this.categories;
 	}
 	
-	public void addCategory(Category theC) {
-		theC.addInstance(this);
+	public void addCategory(Category theC) { 
 		this.categories.add(theC);
 	} 
 	
@@ -121,31 +133,52 @@ public class Wdb extends LinkedList<Wdb>{
 		this.setProperty(propertyName, valuePar );
 	}
 
+	/**
+	 * return all objects which has property with name == "key"
+	 * 
+	 * @author vipup
+	 * @param key
+	 * @return
+	 */
 	public Wdb getProperty(String key) {
-		Wdb theOne = this.props.get(key);
-		theOne .setProperty("X-Get", key);
-		if (this.size()==0) {
-			
-			return theOne;
-		} else{
-			Wdb retval = new Wdb(key);
-			
-			retval.setProperty(key, theOne);
-			retval.add(theOne);
-			for (int i=0;i<this.size();i++){
-				Wdb theNext = this.get(i);
-				Wdb oTmp = theNext.getProperty(key) ;
-				if (oTmp!=null){
-					retval.add(oTmp);
-				}
+		Wdb retval = this.props.get(key);      
+		Iterator<Wdb> i = this.iterator();
+		for (;i.hasNext();){
+			Wdb next = i.next();
+			if (next.getProperty(key)!=null){
+				retval.add(next);
 			}
-			return retval ;
 		}
+		return retval;
+
 	}
 
 	public String _() { 
+		if (this.props.containsKey("X-Get")){
+			return _(0);
+		}
 		return oName;
 		
+	}
+
+	private String _(int i) {  
+		String xGet = this.props.get("X-Get")._();
+		Wdb retval = this.get(i).props.get(xGet) ;
+		return retval._();  
+	}
+
+	public  Wdb  getProperties(String key) { 
+		Wdb retval = getProperty(key);
+		return retval ;
+		
+	}
+
+	void setId(String key) {
+		this.id = key;
+	}
+
+	public Object getId() {
+		return this.id ;
 	}
 	
  
