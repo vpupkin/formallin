@@ -25,22 +25,16 @@ public class Category extends Wdb{
 		super(oName);  
 	}
 
-	public Category(Category parentCategory, String name) { 
-		super(name); 
+	public Category(Category parentCategory, String oName) { 
+		super(oName); 
 		if (this.parent==null){
 			this.parent=parentCategory; 
 		}else{
 			this.parent.add(parentCategory);
 		}
 	}
-
-	// n-to-m relation
-	private Set<Wdb> instances = new HashSet<Wdb>();
-	
-	
-	public void addInstance(Wdb wdb) {
-		this.instances.add(wdb);
-	}
+  
+ 
 
 }
 
