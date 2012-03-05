@@ -1,5 +1,6 @@
 package eu.blky.wdb;
  
+import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,8 +75,10 @@ public class Wdb extends LinkedList<Wdb>{
 
 	Map<String,Wdb> props = new HashMap<String, Wdb>();
 	private Set<Category> categories = new HashSet<Category>();
+	public UID uid = null;
 	
 	public void setProperty(String propertyName, String valuePar) {
+		this.uid = null; // reset uid for any Object-change
 		Wdb wdbTmp = new Wdb(valuePar);
 		setProperty(propertyName, wdbTmp);
 	}
@@ -179,6 +182,13 @@ public class Wdb extends LinkedList<Wdb>{
 
 	public Object getId() {
 		return this.id ;
+	}
+
+	public UID getUID() {
+		synchronized (UID.class) {
+			this.uid = this.uid == null? new UID():this.uid ;
+		}
+		return this.uid; 
 	}
 	
  

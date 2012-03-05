@@ -97,10 +97,21 @@ public class WDBOService {
 		return (Wdb) getObjects() . toArray()[i];
 	}
 
-	public void flush(Wdb translator) {
+	public void flush(Wdb oPar) {
 		Cache cTmp = getCache()  ;
-		UID uid = new UID();
-		cTmp.put( uid.toString()  , translator );
+		UID uid = oPar.getUID();
+		Object o = cTmp.get(uid.toString());
+		if (o==null){
+			cTmp.put( uid.toString()  , oPar );
+		}else{
+			// this object is already in store - update by storing the same obj with new uid, if some change occur 
+			// TODO +++ ??
+			if (!oPar.equals(o)){
+				oPar.uid = new UID();
+				flush(oPar);
+			}
+			
+		}
 	}
 
 	public void remove(Wdb oPar) {
