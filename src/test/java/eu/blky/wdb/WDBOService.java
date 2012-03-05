@@ -97,20 +97,27 @@ public class WDBOService {
 		return (Wdb) getObjects() . toArray()[i];
 	}
 
+	/**
+	 * make synch the Object with cache-persistence.
+	 * 
+	 * @author vipup
+	 * @param oPar
+	 */
 	public void flush(Wdb oPar) {
 		Cache cTmp = getCache()  ;
 		UID uid = oPar.getUID();
 		Object o = cTmp.get(uid.toString());
-		if (o==null){
+		if (o==null){ // very 1st store
 			cTmp.put( uid.toString()  , oPar );
 		}else{
 			// this object is already in store - update by storing the same obj with new uid, if some change occur 
 			// TODO +++ ??
 			if (!oPar.equals(o)){
-				oPar.uid = new UID();
-				flush(oPar);
-			}
-			
+				synchronized (UID.class) {
+					oPar.uid = new UID();
+					flush(oPar);
+				}
+			}	
 		}
 	}
 
