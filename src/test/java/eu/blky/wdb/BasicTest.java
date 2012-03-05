@@ -203,6 +203,7 @@ public class BasicTest extends TestCase {
 		}
 		
 		ddboService.flush(translator);		
+		translator.setProperty("oneMoreProp", "value");
 		ddboService.flush(translator);
 		
 		assertEquals(2, ddboService.getObjects().size());
@@ -271,6 +272,7 @@ public class BasicTest extends TestCase {
 		}
 		int oCounter = 0;
 		for (long start=System.currentTimeMillis();System.currentTimeMillis()<(start+100);){
+			translator.setProperty("storeId", "#"+oCounter );
 			ddboService.flush(translator);
 			oCounter ++;
 			
@@ -279,6 +281,34 @@ public class BasicTest extends TestCase {
 		assertEquals(oCounter , ddboService.getObjects().size());
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
  
+	}
+
+	public void testDDBO_asProps_100ms(){
+	 	WDBOService ddboService = WDBOService.getInstance();
+		
+		for (Wdb o :ddboService.getObjects()){
+			ddboService.remove(o);
+		}
+		Category category1 = ddboService.createCategory("Author");
+		
+		List  categories = ddboService.getCategories();
+		assertEquals(""+categories, 1, categories.size());
+		
+		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
+		translator.addProperty("First name", "Ivanov");
+		translator.addProperty("Second name", "Sergey");
+		translator.addProperty("role", "translator"); 
+		translator.addCategory(category1) ; 
+		int oCounter = 0;
+		for (long start=System.currentTimeMillis();System.currentTimeMillis()<(start+100);){
+			translator.setProperty("storeId", "#"+oCounter );
+			ddboService.flush(translator);
+			oCounter ++; 
+		}
+		
+		assertEquals(oCounter , ddboService.getObjects().size());
+		assertEquals(oCounter , ddboService.getObjects("Author").size());
+	
 	}
 }
 
