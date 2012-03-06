@@ -19,10 +19,18 @@ public class BasicTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
+
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
+	 	WDBOService ddboService = WDBOService.getInstance();
+		for (Wdb o :ddboService.getObjects()){
+			ddboService.remove(o);
+		}
+		for (Wdb o :ddboService.getCategories() ){
+			ddboService.removeCategory(o);
+		}		
 	} 
 	
 	public void test0() {
@@ -188,7 +196,7 @@ public class BasicTest extends TestCase {
 		
 		Category category1 = ddboService.createCategory("Author");
 		
-		List  categories = ddboService.getCategories();
+		List<Category> categories = ddboService.getCategories();
 		assertEquals(""+categories, 1, categories.size());
 		
 		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
@@ -197,15 +205,13 @@ public class BasicTest extends TestCase {
 		translator.addProperty("role", "translator"); 
 		translator.addCategory(category1) ; 
 				
-		
-		for (Wdb o :ddboService.getObjects()){
-			ddboService.remove(o);
-		}
-		
+		 
 		ddboService.flush(translator);		
 		translator.setProperty("oneMoreProp", "value");
 		ddboService.flush(translator);
 		
+		assertEquals(2, ddboService.getObjects().size());
+		assertEquals(2, ddboService.getObjects("Author").size());
 		assertEquals(2, ddboService.getObjects().size());
 		assertEquals(2, ddboService.getObjects("Author").size());
  
@@ -304,11 +310,9 @@ public class BasicTest extends TestCase {
 			translator.setProperty("storeId", "#"+oCounter );
 			ddboService.flush(translator);
 			oCounter ++; 
-		}
-		
+		} 
 		assertEquals(oCounter , ddboService.getObjects().size());
-		assertEquals(oCounter , ddboService.getObjects("Author").size());
-	
+		assertEquals(oCounter , ddboService.getObjects("Author").size()); 
 	}
 }
 

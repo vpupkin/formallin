@@ -4,6 +4,7 @@ import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import cc.co.llabor.cache.Manager;
@@ -28,11 +29,14 @@ public class WDBOService {
 	}
 
 	public Category createCategory(String key) { 
-		
-		Category retval = (Category) getCategoryCache().get(key );
-		if (retval ==null){
+		Cache categoryCache = getCategoryCache();
+		Properties catTmp = (Properties) categoryCache.get(key+".properties" );
+		Category retval = catTmp==null? new Category(key):new Category(catTmp);
+		if (retval ==null||catTmp==null){
 			retval = new Category(key);
-			getCategoryCache().put(key, retval);
+			Properties properties = retval.toProperties();
+			String key2 = key+".properties"; 
+			categoryCache.put(key2, properties);
 		}
 		return retval ; 
 	}
@@ -51,9 +55,11 @@ public class WDBOService {
 
 	public List<Category> getCategories() { 
 		List<Category> retval = new ArrayList<Category>();
-		Set<String> keys = getCategoryCache().keySet();
+		Cache categoryCache = getCategoryCache();
+		Set<String> keys = categoryCache.keySet();
 		for (String key:keys ){
-			Category catTmp = (Category) getCategoryCache().get(key);
+			Properties o = (Properties) categoryCache.get(key);
+			Category catTmp = new  Category(o);
 			retval.add(catTmp );
 		}
 		return retval ; 
@@ -62,9 +68,14 @@ public class WDBOService {
 	public LinkedList<Wdb> getObjects() { 
 		Set<String> keySet = getCache().keySet();
 		LinkedList<Wdb> retval = new LinkedList( );
+		Cache cacheTmp = getCache();
 		for (String key:keySet){
-			Wdb e = (Wdb) getCache().get(key);
-			e.setId(key);
+			Properties  o = (Properties) cacheTmp.get(key);
+			Wdb e = new Wdb (o); 
+			String id = key;
+			int endIndex = id .indexOf(".properties");
+			id = id .indexOf(".properties")>0?id .substring(0, endIndex ):id;
+			e.setId(id);
 			retval .add(e );
 		}
 		return retval ;
@@ -108,7 +119,9 @@ public class WDBOService {
 		UID uid = oPar.getUID();
 		Object o = cTmp.get(uid.toString());
 		if (o==null){ // very 1st store
-			cTmp.put( uid.toString()  , oPar );
+			Properties oParAsProperties = oPar.toProperties();
+			String key = uid.toString() +".properties";
+			cTmp.put( key , oParAsProperties  );
 		}else{
 			// this object is already in store - update by storing the same obj with new uid, if some change occur 
 			// TODO +++ ??
@@ -121,11 +134,19 @@ public class WDBOService {
 		}
 	}
 
+	
+
 	public void remove(Wdb oPar) {
 		Cache cTmp = getCache()  ;
-		cTmp.remove(oPar.getId());
+		Object id = oPar.getId()+".properties";
+		cTmp.remove(id);
 	}
-
+	public void removeCategory(Wdb oPar) {
+		Cache cTmp = getCategoryCache()  ;
+		Object id = oPar._()+".properties";
+		cTmp.remove(id);
+	} 
+	
 }
 
 
