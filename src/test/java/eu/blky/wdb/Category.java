@@ -1,6 +1,7 @@
 package eu.blky.wdb;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 /** 
@@ -33,8 +34,28 @@ public class Category extends Wdb{
 			this.parent.add(parentCategory);
 		}
 	}
+
+	public Category(Properties catTmp) {
+		super(catTmp);
+	}
   
- 
+	/**
+	 * 
+	 * @author vipup
+	 * @param o
+	 */
+	@Override
+	protected void init(Properties o) {
+		this.oName = o.getProperty("oName");
+		this.id=  o.getProperty("id") ;
+//		String catsTmp = o.getProperty("categories");
+//		if (null!= catsTmp)
+//		for (String cat :catsTmp .split(",")){
+//			WDBOService ddboService = WDBOService.getInstance();
+//			Category catTmp = ddboService.createCategory(cat);
+//			this.categories.add(catTmp);
+//		} 
+	}
 
 }
 

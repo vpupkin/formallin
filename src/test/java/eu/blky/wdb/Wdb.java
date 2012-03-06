@@ -2,12 +2,15 @@ package eu.blky.wdb;
  
 import java.rmi.server.UID;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map; 
+import java.util.Properties;
 import java.util.Set;
 
 /** 
@@ -21,9 +24,9 @@ import java.util.Set;
  */
 public class Wdb extends LinkedList<Wdb>{
 
-	private String oName;
+	protected String oName;
 	private static long cluniqueId=0;
-	private String id = ""+cluniqueId++;
+	protected String id = ""+cluniqueId++;
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		String EOP  = "";
@@ -64,17 +67,41 @@ public class Wdb extends LinkedList<Wdb>{
 			} 
 			EOP = (",");
 		}
-		String catAsStr = this.categories.size()>0?":"+this.categories.toString():"";
+		//String catAsStr = this.categories.size()>0?":"+this.categories.toString():"";
 		String sbAsString = sb.toString().length()>0?"={"+sb+"}":"";
-		return oName+catAsStr+sbAsString;
+		return oName+/*catAsStr+*/sbAsString;
 	}
 
 	public Wdb(String oName) {
 		this.oName = oName;
 	}
 
+	public Wdb(Properties o) {
+		init(o);
+	}
+
+	protected void init(Properties o) {
+		this.oName = o.getProperty("oName");
+		this.id=  o.getProperty("id") ;
+		String catsTmp = o.getProperty("categories");
+		if (null!= catsTmp)
+		for (String cat :catsTmp .split(",")){
+			WDBOService ddboService = WDBOService.getInstance();
+			Category catTmp = ddboService.createCategory(cat);
+			pushCategory( catTmp );
+		} 
+	}
+
+	private void pushCategory(Category catTmp) {
+		if (this.categories ==null){
+			this.categories  =  catTmp ;
+		}else{
+			this.categories  .add(catTmp);
+		}
+	}
+
 	Map<String,Wdb> props = new HashMap<String, Wdb>();
-	private Set<Category> categories = new HashSet<Category>();
+	private Category  categories = null;
 	public UID uid = null;
 	
 	public void setProperty(String propertyName, String valuePar) {
@@ -116,20 +143,34 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 	private int diffCategory(Wdb a, Wdb b) {
 		int retval = 0;
-		Set<Category> categoriesA = a.getCategories();
-		Set<Category> categoriesB = b.getCategories();
-		for (Category cA:categoriesA){
+		Set<Wdb> categoriesA = a.getCategories();
+		Set<Wdb> categoriesB = b.getCategories();
+		for (Wdb cA:categoriesA){
 			if(categoriesB.contains(cA))retval++;
 		}
 		return retval;
 	}
 	
-	public Set<Category> getCategories() {
-		return this.categories;
+	public Set<Wdb> getCategories() {
+		Set<Wdb> retval = this.categories.toSet();
+		return retval ;
 	}
 	
+	protected Set<Wdb> toSet() {
+		Set<Wdb> retval = new HashSet<Wdb>();
+		retval .add(this);
+		if (this.size()>1){
+			Iterator<Wdb> i = this.iterator();
+			for (;i.hasNext();){
+				retval.add(i.next());
+			}
+		}
+		
+		return retval ;
+	}
+
 	public void addCategory(Category theC) { 
-		this.categories.add(theC);
+		this.pushCategory( theC );
 	} 
 	
 	public void addProperty(String propertyName, String valuePar) {
@@ -189,6 +230,26 @@ public class Wdb extends LinkedList<Wdb>{
 			this.uid = this.uid == null? new UID():this.uid ;
 		}
 		return this.uid; 
+	}
+
+	public Properties toProperties() {		 
+			Properties retval = new Properties();
+			//retval.putAll(this.props);
+			for (String key:props.keySet()){
+				retval.put(key, props.get(key)._());
+			}
+			String categoriesStr = "";
+			String prefix = "";
+			if (categories!=null)
+			for (Wdb cat:categories ){
+				categoriesStr  +=  prefix;
+				categoriesStr  +=  cat._();
+				prefix =", ";
+			}			
+			retval.put("categories", categoriesStr  );
+			retval.put("oName", oName);
+			retval.put("id", ""+id);
+			return retval; 		
 	}
 	
  
