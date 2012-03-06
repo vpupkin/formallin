@@ -1,4 +1,4 @@
-cc.co.llabor.cache.BasicCacheFactory
+eu.blky.wdb.WdbCacheFactory
 Only first line of this file will be reader
 rest is ignored 
 @see net.sf.jsr107cache.CacheManager.class#Line:98
