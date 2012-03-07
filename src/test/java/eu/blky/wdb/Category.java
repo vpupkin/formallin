@@ -1,8 +1,6 @@
 package eu.blky.wdb;
-
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+ 
+import java.util.Properties; 
 
 /** 
  * <b>Description:TODO</b>
@@ -23,11 +21,12 @@ public class Category extends Wdb{
 
 
 	public Category(String oName) {
-		super(oName);  
+		this(null, oName);
 	}
 
 	public Category(Category parentCategory, String oName) { 
-		super(oName); 
+		//super(oName); 
+		this.oName = oName;
 		if (this.parent==null){
 			this.parent=parentCategory; 
 		}else{
