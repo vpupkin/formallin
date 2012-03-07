@@ -20,6 +20,11 @@ public class BasicTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
+
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
 	 	WDBOService ddboService = WDBOService.getInstance();
 		for (Wdb o :ddboService.getObjects()){
 			ddboService.remove(o);
@@ -27,11 +32,6 @@ public class BasicTest extends TestCase {
 		for (Wdb o :ddboService.getCategories() ){
 			ddboService.removeCategory(o);
 		}	
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	
 	} 
 	
 	public void test0() {
@@ -327,8 +327,10 @@ public class BasicTest extends TestCase {
 			
 		}
 		
-		assertEquals(oCounter , ddboService.getObjects().size());
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
+		assertEquals(17 , ddboService.getObjects().size());
+		assertEquals(oCounter , ddboService.getObjects("Author").size());
+		assertEquals(17 , ddboService.getObjects().size());
  
 	}
 
@@ -354,8 +356,9 @@ public class BasicTest extends TestCase {
 			ddboService.flush(translator);
 			oCounter ++; 
 		} 
-		assertEquals(oCounter , ddboService.getObjects().size());
+
 		assertEquals(oCounter , ddboService.getObjects("Author").size()); 
+		assertEquals(17 , ddboService.getObjects().size());
 	}
 }
 
