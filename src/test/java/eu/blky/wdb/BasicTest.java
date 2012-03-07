@@ -20,17 +20,18 @@ public class BasicTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
 	 	WDBOService ddboService = WDBOService.getInstance();
 		for (Wdb o :ddboService.getObjects()){
 			ddboService.remove(o);
 		}
 		for (Wdb o :ddboService.getCategories() ){
 			ddboService.removeCategory(o);
-		}		
+		}	
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	
 	} 
 	
 	public void test0() {
@@ -151,6 +152,48 @@ public class BasicTest extends TestCase {
 	
 	
 	
+	public void test2ndCategoryFlush() {
+		Wdb author = new Wdb ("Author");
+		author.setProperty("First name", "Cervantes");
+		author.addProperty("Second name", "Miguel");
+		
+		Category bookCat = new Category("book");
+		Category proseCat = new Category(bookCat, "prose");
+		
+		Wdb  book = new Wdb ("Book");
+		book.addCategory(proseCat);
+		book.setProperty("Title", "Don Quijote");
+		book.setProperty("Author", author); 
+		Wdb  book2 = new Wdb ("Book");
+		book2.addCategory(bookCat);
+		book2.setProperty("Title", "Kornelia");
+		book2.setProperty("Author", author);
+		assertEquals( book2.getProperty("Author").getProperty("First name")._(), "Cervantes" );
+		assertEquals( book .getProperty("Title")._(), "Don Quijote" );
+		
+		Wdb  rack = new Wdb ("Shelf"); 
+		rack.setProperty("book", book); 
+		rack.setProperty("book", book2); 
+		rack.setProperty("Color", "red");  
+		System.out.println(rack);
+		
+		assertEquals( rack .getProperty("Color")._(), "red" );
+		Wdb books = rack .getProperty("book");// here should be two books! 
+		Wdb titles = books.getProperty("Title");// here must be two titles! 
+		System.out.println(titles);
+		assertEquals( titles.size(),2 );
+		titles = books.getProperty("Title");// here must be two titles! 
+		
+		assertEquals( titles.size(),3 ); // TODO WTF!?
+		
+		
+		WDBOService ddboService = WDBOService.getInstance();
+		
+		ddboService .flush(rack);
+		 
+	}
+	
+	
 	
 	public void test2ndCategoryXStream() {
 		Wdb author = new Wdb ("Author");
@@ -210,9 +253,9 @@ public class BasicTest extends TestCase {
 		translator.setProperty("oneMoreProp", "value");
 		ddboService.flush(translator);
 		
-		assertEquals(2, ddboService.getObjects().size());
+		assertEquals(6, ddboService.getObjects().size());
 		assertEquals(2, ddboService.getObjects("Author").size());
-		assertEquals(2, ddboService.getObjects().size());
+		assertEquals(6, ddboService.getObjects().size());
 		assertEquals(2, ddboService.getObjects("Author").size());
  
 	}	
