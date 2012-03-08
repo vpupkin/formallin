@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import junit.framework.TestCase;
-
-import org.junit.After;
-import org.junit.Before;
+ 
 
 /** 
  * <b>Description:TODO</b>
@@ -19,12 +17,9 @@ import org.junit.Before;
  * Creation:  16.02.2012::13:16:34<br> 
  */
 public class CfgReaderTest  extends TestCase {
-
-	@Before
+ 
 	public void setUp() throws Exception {
-	}
-
-	@After
+	} 
 	public void tearDown() throws Exception {
 	}
 	

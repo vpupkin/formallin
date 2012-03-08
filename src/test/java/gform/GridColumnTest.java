@@ -2,51 +2,27 @@
  * 
  */
 package gform;
+   
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.xml.sax.SAXException;
+import junit.framework.TestCase; 
 
 /**
  * @author Administrador
  * 
  */
-public class GridColumnTest {
-
-	@BeforeClass
+public class GridColumnTest extends TestCase {
 	public static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterClass
+	} 
 	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
+	} 
 	public void setUp() throws Exception {
-	}
-
-	@After
+	} 
 	public void tearDown() throws Exception {
 	}
 
 	/**
 	 * Test method for {@link gform.GridColumn}.
-	 */
-	@Test
+	 */ 
 	public void testToString(){
 		System.out.println("test GridColumn.toString()");
 		Element element = new Element();

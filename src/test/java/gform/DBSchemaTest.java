@@ -2,24 +2,19 @@
  * 
  */
 package gform;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+ 
 
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import junit.framework.TestCase;
+ 
 
 /**
  * @author Administrador
  * 
  */
-public class DBSchemaTest {
+public class DBSchemaTest  extends TestCase {
 	
 	private static Logger log = Logger.getLogger(DBSchemaTest.class.getName());
 	DBSchema db;
@@ -27,22 +22,19 @@ public class DBSchemaTest {
 	
 	/**
 	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
+	 */ 
 	public static void setUpBeforeClass() throws Exception {
 	}
 
 	/**
 	 * @throws java.lang.Exception
-	 */
-	@AfterClass
+	 */ 
 	public static void tearDownAfterClass() throws Exception {
 	}
 
 	/**
 	 * @throws java.lang.Exception
-	 */
-	@Before
+	 */ 
 	public void setUp() throws Exception {
 		log.info("setUp");
 		db = new DBSchema("gescsidiomas");
@@ -51,8 +43,7 @@ public class DBSchemaTest {
 
 	/**
 	 * @throws java.lang.Exception
-	 */
-	@After
+	 */ 
 	public void tearDown() throws Exception {
 		log.info("tearDown");
 		if(db.isTableExists(testTable.getName())){
@@ -65,8 +56,7 @@ public class DBSchemaTest {
 	 * Test method for {@link gform.DBSchema#createTable(java.lang.String)}.
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
-	 */
-	@Test
+	 */ 
 	public void testCreateTable() throws ClassNotFoundException, SQLException {
 		log.info("createTable");
 		

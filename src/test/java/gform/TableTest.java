@@ -5,50 +5,31 @@ package gform;
 
 import java.util.ArrayList;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import junit.framework.TestCase;
+ 
 
 /**
  * @author Administrador
  * 
  */
-public class TableTest {
+public class TableTest extends TestCase {
+ 
 
 	/**
 	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
+	 */ 
 	public void setUp() throws Exception {
 	}
 
 	/**
 	 * @throws java.lang.Exception
-	 */
-	@After
+	 */ 
 	public void tearDown() throws Exception {
 	}
 
 	/**
 	 * Test method for {@link gform.DFUtil#parseTable(java.lang.String)}.
-	 */
-	@Test
+	 */ 
 	public void testParseTable() {
 
 		Table table = new Table("servicios_traduccion");
