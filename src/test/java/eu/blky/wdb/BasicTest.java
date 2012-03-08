@@ -1,5 +1,6 @@
 package eu.blky.wdb;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.thoughtworks.xstream.XStream;
@@ -301,7 +302,7 @@ public class BasicTest extends TestCase {
 	
 	}
 
-	public void testDDBO_100ms(){
+	public void testDDBO_XXXms(){
 	 	WDBOService ddboService = WDBOService.getInstance();
 		
 		Category category1 = ddboService.createCategory("Author");
@@ -309,7 +310,7 @@ public class BasicTest extends TestCase {
 		List  categories = ddboService.getCategories();
 		assertEquals(""+categories, 1, categories.size());
 		
-		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
+		Wdb  translator = new Wdb (("Sergei Ivanoff"), category1);// new "Sergei Ivanoff":Author //new Wdb (new Category2("Author"));
 		translator.addProperty("First name", "Ivanov");
 		translator.addProperty("Second name", "Sergey");
 		translator.addProperty("role", "translator"); 
@@ -320,17 +321,23 @@ public class BasicTest extends TestCase {
 			ddboService.remove(o);
 		}
 		int oCounter = 0;
-		for (long start=System.currentTimeMillis();System.currentTimeMillis()<(start+100);){
+		long start=System.currentTimeMillis();
+		long ttlTmp =(start+100) +start%200;
+		// here will be stored modified version of the Obj -> all prev. versions have to be shifted. 
+		for (;System.currentTimeMillis()<ttlTmp ;){
 			translator.setProperty("storeId", "#"+oCounter );
 			ddboService.flush(translator);
-			oCounter ++;
-			
+			oCounter ++; 
 		}
 		
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
-		assertEquals(17 , ddboService.getObjects().size());
+		LinkedList<Wdb> objects = ddboService.getObjects();
+		int y = oCounter*2+3;//x*2+3;
+		assertEquals(oCounter+" !=!="+objects, y , objects.size());
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
-		assertEquals(17 , ddboService.getObjects().size());
+
+		assertEquals(y , ddboService.getObjects().size());
+
  
 	}
 
@@ -356,9 +363,10 @@ public class BasicTest extends TestCase {
 			ddboService.flush(translator);
 			oCounter ++; 
 		} 
-
+		int y = oCounter*2+3;//x*2+3;
 		assertEquals(oCounter , ddboService.getObjects("Author").size()); 
-		assertEquals(17 , ddboService.getObjects().size());
+		LinkedList<Wdb> objects = ddboService.getObjects();
+		assertEquals(""+objects, y , objects.size());
 	}
 }
 
