@@ -103,7 +103,7 @@ public class BasicTest extends TestCase {
 		Wdb  book = new Wdb ("Book");
 		book.setProperty("Title", "Don Quijote");
 		book.setProperty("Author", author);
-//		System.out.println(book);
+//		
 		Wdb  book2 = new Wdb ("Book");
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
@@ -112,19 +112,19 @@ public class BasicTest extends TestCase {
 
 		
 		Wdb  rack = new Wdb ("Shelf");
-//		System.out.println(rack);
+//		
 		rack.setProperty("book", book);
-//		System.out.println(rack);
+//		
 		rack.setProperty("book", book2);
-//		System.out.println(rack);
+//		
 		rack.setProperty("Color", "red"); 
-//		System.out.println(rack);
+//		
 		
 		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		assertEquals( books.size(),2 );	 
 		Wdb titles = rack.getProperty("Title");// here must be no titles!
-//		System.out.println(titles);
+//		
 		assertEquals( titles , null );	 
 	}
 	
@@ -153,12 +153,12 @@ public class BasicTest extends TestCase {
 		rack.setProperty("book", book); 
 		rack.setProperty("book", book2); 
 		rack.setProperty("Color", "red");  
-//		System.out.println(rack);
+//		
 		
 		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
-//		System.out.println(titles);
+//		
 		assertEquals( titles.size(),2 );
 		titles = books.getProperty("Title");// here must be two titles! 
 		
@@ -191,12 +191,12 @@ public class BasicTest extends TestCase {
 		rack.setProperty("book", book); 
 		rack.setProperty("book", book2); 
 		rack.setProperty("Color", "red");  
-//		System.out.println(rack);
+//		
 		
 		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
-//		System.out.println(titles);
+//		
 		assertEquals( titles.size(),2 );
 		titles = books.getProperty("Title");// here must be two titles! 
 		
@@ -237,7 +237,7 @@ public class BasicTest extends TestCase {
 		rack.setProperty("Color", "red");
 		XStream x=new XStream();
 		String xmlTmp = x.toXML(rack);
-		//System.out.println(x.toXML(rack));
+		// 
 		assertTrue( xmlTmp.indexOf("Cervantes")>0  );
 		assertTrue( xmlTmp.indexOf("Author")>0  );
 		assertTrue( xmlTmp.indexOf("Kornelia")>0  );
@@ -246,8 +246,8 @@ public class BasicTest extends TestCase {
 		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
-//		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-//		System.out.println(x.toXML(titles));
+//		
+//		
 		assertEquals( titles.size(),2 );
 		 
 	}
@@ -289,14 +289,14 @@ public class BasicTest extends TestCase {
 		translator.addProperty("First name", "Ivanov");
 		translator.addProperty("Second name", "Sergey");
 		translator.addProperty("role", "translator"); 
-		System.out.println(translator); 
+		 
 	 	
 		Wdb propertiesTmp = translator.getProperties("First name");
 		String expected = propertiesTmp._();//propertiesTmp.get(0);
 		assertEquals(expected   , "Ivanov");
 		//translator.changeProperty("First name", 0, "Petrov");
 		translator.setProperty("First name",   "Petrov"); 
-		System.out.println(translator);
+		
 		
 		Wdb  book = new Wdb ("Book");//new Category ("Book"));
 		book.addProperty("Title", "Don Quijote");
