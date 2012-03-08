@@ -1,8 +1,7 @@
 package eu.blky.wdb;
  
 import java.rmi.server.UID;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.ArrayList; 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +23,10 @@ import java.util.Set;
  */
 public class Wdb extends LinkedList<Wdb>{
 
+	/**
+	 * @author vipup
+	 */
+	private static final long serialVersionUID = 453774634348463145L;
 	private static final Set<Wdb> EMPTY_SET = Collections.unmodifiableSet( new HashSet<Wdb>());
 	protected String oName;
 	private static long cluniqueId=0;
@@ -143,14 +146,14 @@ public class Wdb extends LinkedList<Wdb>{
 		if (this.toString().hashCode() == valuePar.toString().hashCode()){
 			throw new WdbException("Wrong Parent - (itself)_!"); // TODO
 		} 
-		try{// try //// - shifting
+		//try{// try //// - shifting
 			Wdb oldTmp = props.put(key, valuePar);
 			if (oldTmp!=null){
 				valuePar.add(oldTmp); 
 			}
-		}	catch(Exception e){
-			e.printStackTrace();
-		}
+//		}	catch(Exception e){
+//			e.printStackTrace();
+//		}
 		 
 	}
 	private int diffCategory(Wdb a, Wdb b) {
@@ -191,21 +194,36 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	/**
-	 * return all objects which has property with name == "key"
+	 * return all objects with the same Category-Set with existing property with name == ${key}
 	 * 
 	 * @author vipup
 	 * @param key
 	 * @return
 	 */
 	public Wdb getProperty(String key) {
-		Wdb retval = this.props.get(key);      
-		Iterator<Wdb> i = this.iterator();
-		for (;i.hasNext();){
-			Wdb next = i.next();
-			if (next.getProperty(key)!=null){
-				retval.add(next);
-			}
+		Category catTmp = new Category(key);
+		Wdb retval = null;
+		try{
+			retval =  this.element().getProperty(key);
+			Wdb returnContainer = new Wdb(retval.toProperties());			
+			Wdb myProp = this.props.get(key);
+			returnContainer .add(myProp );			
+			retval  =returnContainer ; 
+		}catch(Exception e){
+			retval = this.props.get(key);
 		}
+		 
+		
+//		Wdb retval = new Wdb (pTmp._(), catTmp );		//this.props.get(key);
+//		//retval.setProperty("X-Get", key);
+//		
+//		Iterator<Wdb> i = pTmp.iterator();//this.iterator();
+//		for (;i.hasNext();){
+//			Wdb next = i.next();
+//			if (next.getProperty(key)!=null){
+//				retval.add(next);
+//			}
+//		}
 		return retval;
 
 	}

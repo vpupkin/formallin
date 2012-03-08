@@ -157,12 +157,13 @@ public class BasicTest extends TestCase {
 		
 		assertEquals( rack .getProperty("Color")._(), "red" );
 		Wdb books = rack .getProperty("book");// here should be two books! 
+		assertEquals( books.size(),2 );
 		Wdb titles = books.getProperty("Title");// here must be two titles! 
-//		
-		assertEquals( titles.size(),2 );
+ 		assertEquals( titles.size(),2 );
+		
 		titles = books.getProperty("Title");// here must be two titles! 
 		
-		assertEquals( titles.size(),3 ); // TODO WTF!?
+		assertEquals( titles.size(),2 ); // TODO WTF!?
 		 
 	}
 	
@@ -200,9 +201,7 @@ public class BasicTest extends TestCase {
 		assertEquals( titles.size(),2 );
 		titles = books.getProperty("Title");// here must be two titles! 
 		
-		assertEquals( titles.size(),3 ); // TODO WTF!?
-		
-		
+		assertEquals( titles.size(),2 ); // TODO WTF!? 
 		WDBOService ddboService = WDBOService.getInstance();
 		
 		ddboService .flush(rack);
@@ -378,7 +377,10 @@ public class BasicTest extends TestCase {
 		translator.addProperty("role", "translator"); 
 		translator.addCategory(category1) ; 
 		int oCounter = 0;
-		for (long start=System.currentTimeMillis();System.currentTimeMillis()<(start+100);){
+		long start=System.currentTimeMillis();
+		long ttlTmp =(start+100) +start%111;
+		// here will be stored modified version of the Obj -> all prev. versions have to be shifted. 
+		for (;System.currentTimeMillis()<ttlTmp ;){
 			translator.setProperty("storeId", "#"+oCounter );
 			ddboService.flush(translator);
 			oCounter ++; 
@@ -387,6 +389,16 @@ public class BasicTest extends TestCase {
 		assertEquals(oCounter , ddboService.getObjects("Author").size()); 
 		LinkedList<Wdb> objects = ddboService.getObjects();
 		assertEquals(""+objects, y , objects.size());
+		
+		long searchStart = System.currentTimeMillis();
+		int searchCount=22;
+		for (int i=0;i<searchCount;i++){
+			assertEquals(oCounter , ddboService.getObjects("Author").size());
+		}
+		long searchEnd = System.currentTimeMillis();
+		System.out.println( "for #"+y+":::"+ (1000* searchCount)/(searchEnd -searchStart) +" sps !! "+((searchEnd -searchStart)/searchCount)+" ms-per-search ");
+				 
+
 	}
 }
 

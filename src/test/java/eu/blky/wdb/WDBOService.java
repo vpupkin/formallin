@@ -12,7 +12,7 @@ import cc.co.llabor.cache.Manager;
 import net.sf.jsr107cache.Cache;
 
 /** 
- * <b>Description:TODO</b>
+ * <b>primary interface for interaction with CacheFS-WDB persistence.</b>
  * @author      vipup<br>
  * <br>
  * <b>Copyright:</b>     Copyright (c) 2006-2008 Monster AG <br>
