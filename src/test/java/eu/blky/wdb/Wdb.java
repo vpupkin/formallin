@@ -137,31 +137,21 @@ public class Wdb extends LinkedList<Wdb>{
 		return super.size() +1;
 	}
 	
-	public void setProperty(String propertyName, Wdb valuePar) {
-//		Wdb oldTmp  = props.put( propertyName, wdbTmp );
-//		if (oldTmp!=null && !oldTmp.equals( wdbTmp )){
-//			wdbTmp  .add(oldTmp  );
-//		}		
+	public void setProperty(String key, Wdb valuePar) {
+			
 		if (valuePar == null )return; // TODO
 		if (this.toString().hashCode() == valuePar.toString().hashCode()){
 			throw new WdbException("Wrong Parent - (itself)_!"); // TODO
-		}
-		{ //if (valuePar instanceof  Wdb)
-			// compare own categories with valuePar
-			Wdb toAssignValue = (Wdb)valuePar;
-			if (1==2 && diffCategory(this,toAssignValue)==0){
-				throw new WdbException("identicall category-Set !");
-			}else{
-				Wdb oTmp = props.get(propertyName);
-				if (oTmp == null){
-					oTmp = toAssignValue;
-				}else{
-					oTmp.add(toAssignValue);
-				}
-				props.put( propertyName, oTmp); 
-			}
-				
 		} 
+		try{// try //// - shifting
+			Wdb oldTmp = props.put(key, valuePar);
+			if (oldTmp!=null){
+				valuePar.add(oldTmp); 
+			}
+		}	catch(Exception e){
+			e.printStackTrace();
+		}
+		 
 	}
 	private int diffCategory(Wdb a, Wdb b) {
 		int retval = 0;
