@@ -1,5 +1,6 @@
 package eu.blky.wdb;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -399,6 +400,61 @@ public class BasicTest extends TestCase {
 		System.out.println( "for #"+y+":::"+ (1000* searchCount)/(searchEnd -searchStart) +" sps !! "+((searchEnd -searchStart)/searchCount)+" ms-per-search ");
 				 
 
+	}
+	
+	
+	
+	private String getTitle(){
+		String in []=new String[]{"At", "In" };
+		String city []=new String[]{"New York", "Moscow", "Berlin", "Tokio"};
+		String year []=new String[]{"1810", "1984", "2000", "2050"};
+		String me []=new String[]{"I", "we", "they", "you", "she", "Bob", "Alise"};
+		String found []=new String[]{"loose", "found", "throw", "escape"};
+		String her []=new String[]{"love", "life" };
+		String retval =
+			in[(int) ((Math.random()*10000)%in.length)]+" "+  
+			city[(int) ((Math.random()*10000)%city.length)]+" "+  
+			year[(int) ((Math.random()*10000)%year.length)]+" "+  
+			me[(int) ((Math.random()*10000)%me.length)]+" "+  
+			found[(int) ((Math.random()*10000)%found.length)]+" "+  
+			her[(int) ((Math.random()*10000)%her.length)]+" "+  
+			""
+			;
+		return retval ;
+	}
+	private String getFSName(){
+		String fn []=new String[]{"Ivan","Elena","Tom","Jim","Anton","Lev"  };
+		String sn []=new String[]{"Pushkin", "Oruel", "Twen", "Sharapov", "Nikamoto", "Down" };
+		String retval =
+			fn[(int) ((Math.random()*10000)%fn.length)]+" "+  
+			sn[(int) ((Math.random()*10000)%sn.length)]+" "+    
+			""
+			;
+		return retval ;
+	}	
+	public void testDDBO_BibCollection(){  
+		
+		WDBOService ddboService = WDBOService.getInstance();
+
+		int toCreate = 100;
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < toCreate; i++) {
+			Category categoryA = ddboService.createCategory("Author");
+			Wdb aTmp = new Wdb(getFSName(), categoryA);
+			Category categoryB = ddboService.createCategory("Book");
+			Wdb bTmp = new Wdb(getTitle(), categoryB);
+
+			bTmp.setProperty("author", aTmp);
+			bTmp.setProperty("published", "" + new Date());
+
+			ddboService.flush(bTmp); 
+			//System.out.println(bTmp);
+		} 
+		System.out.println("#"+toCreate+"items created in "+(System.currentTimeMillis() - start)+" ms");
+		assertEquals( ddboService.getObjects("Author").size(), toCreate);
+		assertEquals( ddboService.getObjects("Book").size(), toCreate);
+		
+		
 	}
 }
 

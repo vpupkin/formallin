@@ -288,16 +288,19 @@ public class Wdb extends LinkedList<Wdb>{
 			}
 			String categoriesStr = "";
 			String prefix = "";
-			if (categories!=null)
-			if (categories.size()>1)	{
-				categoriesStr +=categories._();
-				prefix =", ";
-				for (Wdb cat:categories ){
-					categoriesStr  +=  prefix;
-					categoriesStr  +=  cat._();
+			if (categories!=null){
+				if (categories.size()>0)	{
+					categoriesStr +=categories._();
 					prefix =", ";
-				}			
-				retval.put("categories", categoriesStr  );
+					for (Wdb cat:categories ){
+						categoriesStr  +=  prefix;
+						categoriesStr  +=  cat._();
+						prefix =", ";
+					}	 
+				}
+				if (categoriesStr.length()>0){
+					retval.put("categories", categoriesStr  );
+				}
 			}
 			if (null != this.oName){
 				retval.put("oName", this.oName);

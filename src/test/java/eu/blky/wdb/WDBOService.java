@@ -83,11 +83,18 @@ public class WDBOService {
 
 	public LinkedList<Wdb> getObjects(String categoryPar) { 
 		LinkedList<Wdb> retval = new LinkedList<Wdb>();
-		for (Wdb next: getObjects()){
-			Category catTmp = this.getCategory(categoryPar);
-			if (next.getCategories().contains(catTmp )){
-				retval.add(next);
+		LinkedList<Wdb> objects = getObjects();
+		Category catTmp = this.getCategory(categoryPar);
+		for (Wdb next: objects){			
+			Set<Wdb> categoriesTmp = next.getCategories();
+			// workaroud for contains!!!! 8-EEE
+			for (Wdb cToCheck:categoriesTmp){
+				if (cToCheck._().equals(  catTmp._())  || cToCheck._() == catTmp._() || 1==2){
+					retval.add(next);
+					break;
+				}
 			}
+			
 		}
 		return retval;
 		
