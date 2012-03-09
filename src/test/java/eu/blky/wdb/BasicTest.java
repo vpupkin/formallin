@@ -3,6 +3,11 @@ package eu.blky.wdb;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
+
+import net.sf.jsr107cache.Cache;
+
+import cc.co.llabor.cache.Manager;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -29,9 +34,13 @@ public class BasicTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	 	WDBOService ddboService = WDBOService.getInstance();
-		for (Wdb o :ddboService.getObjects()){
+	 	long startTime = System.currentTimeMillis();
+	 	LinkedList<Wdb> objects = ddboService.getObjects();
+		for (Wdb o :objects){
 			ddboService.remove(o);
 		}
+		long execTime = System.currentTimeMillis()-startTime ;
+		collectStatistics("deleteAll", objects.size(), execTime ); 
 		for (Wdb o :ddboService.getCategories() ){
 			ddboService.removeCategory(o);
 		}	
@@ -357,7 +366,8 @@ public class BasicTest extends TestCase {
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
 
 		assertEquals(y , ddboService.getObjects().size());
-
+		
+		collectStatistics("updateProp", oCounter, ttlTmp-System.currentTimeMillis());
  
 	}
 
@@ -397,27 +407,33 @@ public class BasicTest extends TestCase {
 			assertEquals(oCounter , ddboService.getObjects("Author").size());
 		}
 		long searchEnd = System.currentTimeMillis();
-		System.out.println( "for #"+y+":::"+ (1000* searchCount)/(searchEnd -searchStart) +" sps !! "+((searchEnd -searchStart)/searchCount)+" ms-per-search ");
-				 
-
+		long msPerSearch = ((searchEnd -searchStart)/searchCount);
+		System.out.println( "for #"+y+":::"+ (1000* searchCount)/(searchEnd -searchStart) +" sps !! "+msPerSearch+" ms-per-search ");
+ 
+		collectStatistics("search", searchCount, msPerSearch);
 	}
 	
 	
 	
 	private String getTitle(){
-		String in []=new String[]{"At", "In" };
+		String in []=new String[]{"From", "In"  , "To"};
 		String city []=new String[]{"New York", "Moscow", "Berlin", "Tokio"};
-		String year []=new String[]{"1810", "1984", "2000", "2050"};
-		String me []=new String[]{"I", "we", "they", "you", "she", "Bob", "Alise"};
+		String at []=new String[]{"At", "In" , "The"};
+		String year []=new String[]{"1810", "1984", "1917", "2000", "2050"};
+		String me []=new String[]{"I", "we", "they", "you", "she", "Bob", "Alise", "Rabbit"};
 		String found []=new String[]{"loose", "found", "throw", "escape"};
-		String her []=new String[]{"love", "life" };
+		String her []=new String[]{"his", "her" , "its" , "they"};
+		String flowers []=new String[]{"flowers", "life" , "" , "nature"};
+		String punkt []=new String[]{".", "..." , "!" , "?"};
 		String retval =
 			in[(int) ((Math.random()*10000)%in.length)]+" "+  
 			city[(int) ((Math.random()*10000)%city.length)]+" "+  
+			at[(int) ((Math.random()*10000)%at.length)]+" "+  
 			year[(int) ((Math.random()*10000)%year.length)]+" "+  
 			me[(int) ((Math.random()*10000)%me.length)]+" "+  
 			found[(int) ((Math.random()*10000)%found.length)]+" "+  
 			her[(int) ((Math.random()*10000)%her.length)]+" "+  
+			punkt[(int) ((Math.random()*10000)%punkt.length)]+" "+  
 			""
 			;
 		return retval ;
@@ -436,7 +452,7 @@ public class BasicTest extends TestCase {
 		
 		WDBOService ddboService = WDBOService.getInstance();
 
-		int toCreate = 100;
+		int toCreate = (int) (101 + System.nanoTime()%100);
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < toCreate; i++) {
 			Category categoryA = ddboService.createCategory("Author");
@@ -450,11 +466,87 @@ public class BasicTest extends TestCase {
 			ddboService.flush(bTmp); 
 			//System.out.println(bTmp);
 		} 
-		System.out.println("#"+toCreate+"items created in "+(System.currentTimeMillis() - start)+" ms");
+		long l = System.currentTimeMillis() - start;
+		System.out.println("#"+toCreate+"items created in "+l+" ms");
 		assertEquals( ddboService.getObjects("Author").size(), toCreate);
 		assertEquals( ddboService.getObjects("Book").size(), toCreate);
 		
+		collectStatistics("create", toCreate, l); 
+	}
+
+	private Wdb getAddress(){
+		WDBOService ddboService = WDBOService.getInstance(); 
+		Category categoryAddrress = ddboService.createCategory("Addrress");
+		Category categoryC = ddboService.createCategory("Country");
+		Category categoryD = ddboService.createCategory("House");
+		Category categoryE = ddboService.createCategory("Street");
+		Category categoryF = ddboService.createCategory("Floor");
+		Category categoryG = ddboService.createCategory("Town");
+		Category categoryP = ddboService.createCategory("Planet");
+
+		String land []=new String[]{"Russia", "USA"  , "Germany", "Spain", "Vietnam" , "Canada", "Japan", "China", "Germany", "France"};
+		String city []=new String[]{"New York", "Moscow", "Berlin", "Tokio"};
+		String planet []=new String[]{"Moon", "Mars" , "Earth" , "Venera"};
+		Wdb retval = new Wdb ();
+		retval .addCategory(categoryAddrress);
+		retval .setProperty("land", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryC));
+		retval .setProperty("city", new Wdb(city[(int) ((Math.random()*10000)%city.length)] , categoryG));
+		retval .setProperty("house", new Wdb( ""+(int) ((Math.random()*10000)%land.length)  , categoryD));
+		retval .setProperty("street", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryE));
+		retval .setProperty("floor", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryF));
+		retval .setProperty("planet", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryP));
+ 		return retval ;
+	}
+	
+	
+	public void testGalaLib(){  
 		
+		WDBOService ddboService = WDBOService.getInstance(); 
+		int toCreate = (int) (101 + System.nanoTime()%100);
+		long start = System.currentTimeMillis();
+		Category categoryA = ddboService.createCategory("Author");
+		Category categoryB = ddboService.createCategory("Book");
+		
+		for (int i = 0; i < toCreate; i++) {
+			// author 
+			Wdb aTmp = new Wdb(getFSName(), categoryA);
+			for (int j=0;j< System.currentTimeMillis()%10;j++){
+				Wdb aAdress = getAddress();
+				aTmp.setProperty("adress", aAdress );
+			}
+			Wdb birthAdress = getAddress();
+			aTmp.setProperty("birthAdress", birthAdress );
+			Wdb bTmp = new Wdb(getTitle(), categoryB);
+
+			bTmp.setProperty("author", aTmp);
+			bTmp.setProperty("published", "" + new Date());
+
+			ddboService.flush(bTmp); 
+			//System.out.println(bTmp);
+		} 
+		long l = System.currentTimeMillis() - start;
+		System.out.println("#"+toCreate+"items created in "+l+" ms");
+		assertEquals( ddboService.getObjects("Author").size(), toCreate);
+		assertEquals( ddboService.getObjects("Book").size(), toCreate);
+		
+		collectStatistics("createGala", toCreate, l); 
+	}
+	
+
+	private void collectStatistics(String statName, int toCreate, long l) {
+		Cache c = Manager.getCache("WBDstat");
+		Properties cachedStat = (Properties) c.get(statName+".properties");
+		cachedStat = cachedStat == null?new Properties():cachedStat ;
+		String  key = statName +"_"+toCreate;
+		String value = ""+l;
+		Object oldVal = cachedStat .put(key , value);
+		String newKey = key;
+		while(oldVal!=null){
+			newKey = "~"+newKey;
+			oldVal = cachedStat .put(newKey  , oldVal);
+		}		
+		c.put(statName+".properties", cachedStat);
+
 	}
 }
 
