@@ -27,16 +27,55 @@ public class WDBOService {
 	public static WDBOService getInstance() {
 		return me;
 	}
-
-	public Category createCategory(String key) { 
+	
+	private Wdb nullObject = null;
+	private Wdb getNullObject(){
+		nullObject = nullObject ==null?new Wdb("nullObject"):nullObject ;
+		return nullObject ;
+	}
+	/**
+	 * @deprecated use Wbd-target object as one more parm
+	 * 
+	 * 
+	 * @author vipup
+	 * @param key
+	 * @return
+	 */
+	public Category createCategory(String key ) {  
+		Wdb nullObject2 = getNullObject();
+		UID uid = nullObject2.getUID();
+		System.out.println(uid);
+		
+		return createCategory(key, nullObject2);
+	}
+	public Category createCategory(String key, Wdb forObject) { 
 		Cache categoryCache = getCategoryCache();
-		Properties catTmp = (Properties) categoryCache.get(key+".properties" );
-		Category retval = catTmp==null? new Category(key):new Category(catTmp);
-		if (retval ==null||catTmp==null){
-			retval = new Category(key);
-			Properties properties = retval.toProperties();
-			String key2 = key+".properties"; 
-			categoryCache.put(key2, properties);
+		Category retval  = null;
+		synchronized(Cache.class){
+			Properties catTmp = (Properties) categoryCache.get(key+".properties" );
+			retval = catTmp==null? new Category(key):new Category(catTmp);
+			if (retval ==null||catTmp==null){
+				retval = new Category(key);
+				Properties properties = retval.toProperties();
+				try{
+					String newUID = forObject.uid.toString();
+					String oldO = (String) properties.put("o", newUID);
+					String bakKey = "~o" ;
+					String suffix = ", ";
+					while(oldO!=null){
+							properties .put("o", oldO  + suffix  + newUID);
+							
+							oldO = (String) properties.put(bakKey, oldO);
+							bakKey = "~"+bakKey;
+					}
+					 
+					
+				}catch(NullPointerException e){
+					//e.printStackTrace();
+				}
+				String key2 = key+".properties";
+				categoryCache.put(key2, properties);
+			}
 		}
 		return retval ; 
 	}
@@ -58,6 +97,7 @@ public class WDBOService {
 		Cache categoryCache = getCategoryCache();
 		Set<String> keys = categoryCache.keySet();
 		for (String key:keys ){
+			if ("nullObject.properties".equals(key))continue; // ignore NULL
 			Properties o = (Properties) categoryCache.get(key);
 			Category catTmp = new  Category(o);
 			retval.add(catTmp );

@@ -112,7 +112,7 @@ public class Wdb extends LinkedList<Wdb>{
 
 	private void pushCategory(String catPar) {
 		WDBOService ddboService = WDBOService.getInstance();
-		Category catTmp = ddboService.createCategory(catPar);
+		Category catTmp = ddboService.createCategory(catPar, this);
 		pushCategory(catTmp);
 	}
 	private void pushCategory(Category catPar) { 
@@ -120,7 +120,7 @@ public class Wdb extends LinkedList<Wdb>{
 			this.categories  =  catPar ;
 		}else{
 			this.categories  .add(catPar);
-		}
+		} 
 	}
 
 	Map<String,Wdb> props = new HashMap<String, Wdb>();
@@ -130,7 +130,7 @@ public class Wdb extends LinkedList<Wdb>{
 	public void setProperty(String propertyName, String valuePar) {
 		this.uid = null; // reset uid for any Object-change  
 		WDBOService ddboService = WDBOService.getInstance();
-		Category theC = ddboService.createCategory(propertyName);
+		Category theC = ddboService.createCategory(propertyName, this);
 		Wdb wdbTmp = new Wdb(valuePar,theC );		
 		setProperty(propertyName, wdbTmp);
 	}

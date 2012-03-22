@@ -211,7 +211,7 @@ public class BasicTest extends TestCase {
 		assertEquals( titles.size(),2 );
 		titles = books.getProperty("Title");// here must be two titles! 
 		
-		assertEquals( titles.size(),2 ); // TODO WTF!? 
+		assertEquals( titles.size(),2 ); //  
 		WDBOService ddboService = WDBOService.getInstance();
 		
 		ddboService .flush(rack);
@@ -221,18 +221,18 @@ public class BasicTest extends TestCase {
  
 	
 	public void test2ndCategoryXStream() {
-		Wdb author = new Wdb ("Author");
+		Wdb author = new Wdb ("Author");  // Object author = new Author();
 		author.setProperty("First name", "Cervantes");
 		author.addProperty("Second name", "Miguel");
 		
 		Category bookCat = new Category("book");
 		Category proseCat = new Category(bookCat, "prose");
 		
-		Wdb  book = new Wdb ("Book");
+		Wdb  book = new Wdb ("Book");// Object book = new Book();
 		book.addCategory(proseCat);
 		book.setProperty("Title", "Don Quijote");
 		book.setProperty("Author", author); 
-		Wdb  book2 = new Wdb ("Book");
+		Wdb  book2 = new Wdb ("Book");// Object book2 = new Book();
 		book2.addCategory(bookCat);
 		book2.setProperty("Title", "Kornelia");
 		book2.setProperty("Author", author);
@@ -240,7 +240,7 @@ public class BasicTest extends TestCase {
 		assertEquals( propertyFN._(), "Cervantes" );
 		assertEquals( book .getProperty("Title")._(), "Don Quijote" );
 		
-		Wdb  rack = new Wdb ("Shelf"); 
+		Wdb  rack = new Wdb ("Shelf"); // Object rack = new Shelf();
 		rack.setProperty("book", book); 
 		rack.setProperty("book", book2); 
 		rack.setProperty("Color", "red");
@@ -267,12 +267,13 @@ public class BasicTest extends TestCase {
 	public void testDDBO(){
 	 	WDBOService ddboService = WDBOService.getInstance();
 		
-		Category category1 = ddboService.createCategory("Author");
+		
 		
 		List<Category> categories = ddboService.getCategories();
-		assertEquals(""+categories, 1, categories.size());
+		assertEquals(""+categories, 0, categories.size());// by default the category-list is empty
 		
 		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
+		Category category1 = ddboService.createCategory("Author", translator);
 		translator.addProperty("First name", "Ivanov");
 		translator.addProperty("Second name", "Sergey");
 		translator.addProperty("role", "translator"); 
@@ -339,6 +340,7 @@ public class BasicTest extends TestCase {
 		List  categories = ddboService.getCategories();
 		assertEquals(""+categories, 1, categories.size());
 		
+		//Wdb  translator = new Wdb (("Sergei Ivanoff"), category1);// new "Sergei Ivanoff":Author //new Wdb (new Category2("Author"));
 		Wdb  translator = new Wdb (("Sergei Ivanoff"), category1);// new "Sergei Ivanoff":Author //new Wdb (new Category2("Author"));
 		translator.addProperty("First name", "Ivanov");
 		translator.addProperty("Second name", "Sergey");
@@ -502,10 +504,16 @@ public class BasicTest extends TestCase {
 	public void testGalaLib(){  
 		
 		WDBOService ddboService = WDBOService.getInstance(); 
-		int toCreate = (int) (101 + System.nanoTime()%100);
+		int toCreate = (int) (20 + System.nanoTime()%20);
 		long start = System.currentTimeMillis();
 		Category categoryA = ddboService.createCategory("Author");
 		Category categoryB = ddboService.createCategory("Book");
+		Category libCat = new Category("Library");
+		// assumes we habe 5 librarie
+		Wdb libA  = new Wdb ("LibraryAthen", libCat );
+		Wdb libB  = new Wdb ("LibraryBerlin", libCat);
+		Wdb libC  = new Wdb ("LibraryCologne", libCat );
+		
 		
 		for (int i = 0; i < toCreate; i++) {
 			// author 
@@ -520,10 +528,20 @@ public class BasicTest extends TestCase {
 
 			bTmp.setProperty("author", aTmp);
 			bTmp.setProperty("published", "" + new Date());
-
+			// register book
 			ddboService.flush(bTmp); 
+			
+			// put the book into store
+			if (i%2==0) libA.setProperty("book", bTmp);
+			if (i%3==0) libB.setProperty("book", bTmp);
+			if (i%5==0) libC.setProperty("book", bTmp);
 			//System.out.println(bTmp);
 		} 
+		// persist libriries....
+		ddboService.flush(libA); 
+		ddboService.flush(libB); 
+		ddboService.flush(libC); 
+		
 		long l = System.currentTimeMillis() - start;
 		System.out.println("#"+toCreate+"items created in "+l+" ms");
 		assertEquals( ddboService.getObjects("Author").size(), toCreate);
