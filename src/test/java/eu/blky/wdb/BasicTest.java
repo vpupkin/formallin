@@ -480,11 +480,11 @@ public class BasicTest extends TestCase {
 		WDBOService ddboService = WDBOService.getInstance(); 
 		Category categoryAddrress = ddboService.createCategory("Addrress");
 		Category categoryC = ddboService.createCategory("Country");
-		Category categoryD = ddboService.createCategory("House");
+		Category categoryD = new Category("House");
 		Category categoryE = ddboService.createCategory("Street");
-		Category categoryF = ddboService.createCategory("Floor");
+		Category categoryF = new Category("Floor");
 		Category categoryG = ddboService.createCategory("Town");
-		Category categoryP = ddboService.createCategory("Planet");
+		Category categoryP = new Category("Planet");
 
 		String land []=new String[]{"Russia", "USA"  , "Germany", "Spain", "Vietnam" , "Canada", "Japan", "China", "Germany", "France"};
 		String city []=new String[]{"New York", "Moscow", "Berlin", "Tokio"};
