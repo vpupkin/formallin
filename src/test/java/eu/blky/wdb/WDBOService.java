@@ -34,7 +34,7 @@ public class WDBOService {
 		return nullObject ;
 	}
 	/**
-	 * @deprecated use Wbd-target object as one more parm
+	 * @deprecated use Constructor .OR. Wbd-target object as one more parm
 	 * 
 	 * 
 	 * @author vipup
