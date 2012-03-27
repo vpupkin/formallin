@@ -17,19 +17,20 @@ try{
 %>
 <h1><%=errmessage%></h1> 
 
+
+<h3>Category list</h3>
 <table> 
 <%
 int count = 0;
 for (Category catTmp :ddboService.getCategories()){
 %>
-<tr>
-	<td><%=count++%></td><td><%= catTmp%></td>
-</tr>
+<tr>  	<td><%=count++%></td><td><%= catTmp%></td>   </tr>
 <%
 }
 %>
 </table>
  
+<h3> Add Object form:</h3> 
 <form method="post" id="addObjForm">
 	<input type="text" id="oName" name="oName" class="oName" value="">
 	<input type="text" id="catName" name="catName" class="catName" value="">
