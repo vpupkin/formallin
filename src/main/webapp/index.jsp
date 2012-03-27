@@ -2,8 +2,7 @@
 <%
 String toSearch = ""; 
 String prefixTmp = ",";
-try{
-	
+try{ 
 	toSearch = session.getAttribute("toSearch").toString();
 }catch(Exception e){e.printStackTrace();}	
 if (request.getParameter("toSearch") !=null) // addSEARCH
