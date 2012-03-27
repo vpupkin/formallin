@@ -1,5 +1,15 @@
 package eu.blky.wdb;
  
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.server.UID;
 import java.util.ArrayList; 
 import java.util.Collections;
@@ -249,7 +259,19 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	void setId(String key) {
-		this.id = key;
+		this.id = key; 
+		try {    
+			char[] charArray = key.replace("\\=", "=").toCharArray();
+			byte[] decodedTmp = Base64Coder.decode(charArray);
+			InputStream in64 = new ByteArrayInputStream(  decodedTmp);
+			DataInput stored64 = new DataInputStream(in64 );
+			this.uid =  UID.read(stored64 ); 
+			this.id = this.uid.toString();
+			System.out.println("key:"+key+"->"+uid+"-->> keyID--|"+ this.id );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public Object getId() {
@@ -304,8 +326,27 @@ public class Wdb extends LinkedList<Wdb>{
 			if (null != this.oName){
 				retval.put("oName", this.oName);
 			}
-			retval.put("id", ""+id);
+			retval.put("id", toBase64 () );
 			return retval; 		
+	}
+
+	private String  toBase64() {
+		//this.uid  =  new UID( );// UID.read(in);//
+		String retval = null; 
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		DataOutput out = new DataOutputStream(bout );
+		try {
+			this.uid .write(out );
+			bout.flush();
+			byte[] data =bout.toByteArray();
+			String uid64 = new String( Base64Coder.encode(data) );
+			retval = uid64 ;
+ 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return retval;
 	}
 	
  
