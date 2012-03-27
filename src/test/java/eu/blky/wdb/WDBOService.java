@@ -121,6 +121,13 @@ public class WDBOService {
 		return retval ;
 	}
 
+	/**
+	 * seach all Objects by Category
+	 * 
+	 * @author vipup
+	 * @param categoryPar
+	 * @return
+	 */
 	public LinkedList<Wdb> getObjects(String categoryPar) { 
 		LinkedList<Wdb> retval = new LinkedList<Wdb>();
 		LinkedList<Wdb> objects = getObjects();
