@@ -341,7 +341,10 @@ public class Wdb extends LinkedList<Wdb>{
 			byte[] data =bout.toByteArray();
 			String uid64 = new String( Base64Coder.encode(data) );
 			retval = uid64 ;
- 		} catch (IOException e) {
+		} catch (NullPointerException e) {
+			this.uid = getUID();
+			retval = toBase64() ;
+		} catch (IOException e) {	
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
