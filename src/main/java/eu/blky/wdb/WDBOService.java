@@ -115,6 +115,7 @@ public class WDBOService {
 			String id = key;
 			int endIndex = id .indexOf(".properties");
 			id = id .indexOf(".properties")>0?id .substring(0, endIndex ):id;
+			id = o.getProperty("id");
 			e.setId(id);
 			retval .add(e );
 		}
@@ -171,10 +172,10 @@ public class WDBOService {
 	public void flush(Wdb oPar) {
 		Cache cTmp = getCache()  ;
 		UID uid = oPar.getUID();
-		Object o = cTmp.get(uid.toString());
+		String key = uid.toString() +".properties";
+		Object o = cTmp.get(key);
 		if (o==null){ // very 1st store
-			Properties oParAsProperties = oPar.toProperties();
-			String key = uid.toString() +".properties";
+			Properties oParAsProperties = oPar.toProperties(); 
 			cTmp.put( key , oParAsProperties  );
 		}else{
 			// this object is already in store - update by storing the same obj with new uid, if some change occur 

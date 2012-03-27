@@ -1,23 +1,22 @@
 <%@page import="eu.blky.wdb.WDBOService"%>
 <%@page import="eu.blky.wdb.Wdb"%>
 <%@page import="eu.blky.wdb.Category"%>
-<table>
-
+<table> 
 <%
 WDBOService ddboService = WDBOService.getInstance(); 
-String toSearch = "Library";
+String toSearch = ""; // default search will produse all DB-items
 try{ 
 	toSearch = request.getParameter("toSearch").toString();
 }catch(Exception e){e.printStackTrace();}	
 // search over full scan ....
 int count = 0;
 
-for ( Wdb   o:ddboService.getObjects()){
-	// exact search only!
+for ( Wdb o:ddboService.getObjects()){
+	// here "like" is most effective search! :)
 	if (o._().indexOf(toSearch)  == -1 ) continue; 	
 %>
 <tr>
-	<td><%=count++%></td><td><%=o%> </td>
+	<td><%=count++%></td><td><%=o%> </td><td><%=o.uid%> </td><td><%=o.getUID()%> </td><td><%=o.getCategories()%> </td>
 </tr>
 <% 			
 }		 
