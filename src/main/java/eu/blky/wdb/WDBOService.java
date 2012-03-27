@@ -178,14 +178,28 @@ public class WDBOService {
 			Properties oParAsProperties = oPar.toProperties(); 
 			cTmp.put( key , oParAsProperties  );
 		}else{
-			// this object is already in store - update by storing the same obj with new uid, if some change occur 
-			// TODO +++ ??
-			if (!oPar.equals(o)){
-				synchronized (UID.class) {
-					oPar.uid = new UID();
-					flush(oPar);
+			// this object is already in store - 
+			//	update by storing the same obj with new uid, if some change occur 
+			Properties properties = oPar.toProperties();
+			// workaround for base64 encoding in the properties
+			if (o instanceof Properties){
+				for (Object keyToCompare :properties.keySet()){
+					Object aTmp =  properties.get(keyToCompare);
+					Object bTmp =  ((Properties)o).get(keyToCompare);
+					// assumes the storend obj is always String
+					//unEscape base64
+					bTmp = (""+bTmp).replace("\\=","=").replace("\\:",":");
+					//assert aTmp.equals(bTmp);
+					if (aTmp.equals(bTmp))continue;
+					else {
+						//flush(oPar);
+						//throw new WdbException("Object changend asynchronously!");
+						cTmp.put(key,  properties);
+					}
 				}
-			}	
+			}else{
+				throw new WdbException("Object with id:{"+uid+"} is corrupted!");
+			} 
 		}
 	}
 
