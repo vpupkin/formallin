@@ -1,7 +1,38 @@
- 
+<%@page import="eu.blky.wdb.WDBOService"%>
 <%@page import="eu.blky.wdb.Wdb"%>
 <%@page import="eu.blky.wdb.Category"%>
 <%
-Category libCat = new Category("Library");
-Wdb libA  = new Wdb ("LibraryAthen", libCat );
+String errmessage = "";
+WDBOService ddboService = WDBOService.getInstance();  
+try{ 	
+	String oName = null;
+	String catName = null;
+	oName = request.getParameter("oName").toString(); 
+ 	catName = request.getParameter("catName").toString(); 
+	
+	Wdb oTmp  = new Wdb (oName,ddboService.createCategory(  catName ) ); 
+	// persist libriries.... 
+	ddboService.flush(oTmp);
+}catch(Exception e){e.printStackTrace();}	
 %>
+<h1><%=errmessage%></h1> 
+
+<table> 
+<%
+int count = 0;
+for (Category catTmp :ddboService.getCategories()){
+%>
+<tr>
+	<td><%=count++%></td><td><%= catTmp%></td>
+</tr>
+<%
+}
+%>
+</table>
+ 
+<form method="post" id="addObjForm">
+	<input type="text" id="oName" name="oName" class="oName" value="">
+	<input type="text" id="catName" name="catName" class="catName" value="">
+	<input type="submit" value="createObject">
+</form>
+ 

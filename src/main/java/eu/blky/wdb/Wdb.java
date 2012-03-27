@@ -264,8 +264,7 @@ public class Wdb extends LinkedList<Wdb>{
 					WDBOService ddboService = WDBOService.getInstance();				
 					ddboService .flush(this);
 				}
-			}
-			
+			} 
 		}
 		return this.uid; 
 	}
