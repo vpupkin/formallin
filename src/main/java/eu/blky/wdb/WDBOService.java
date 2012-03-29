@@ -223,6 +223,7 @@ public class WDBOService {
 		Cache cacheTmp = getCache(); 
 		String keyTmp = (""+key).replace("\\", "");
 		keyTmp = keyTmp.indexOf(".properties")>0?keyTmp:(keyTmp+".properties");
+		keyTmp  = keyTmp .replace("\'", "");
 		Object retval = cacheTmp.get(keyTmp);
 		return retval ;
 	} 

@@ -1,3 +1,4 @@
+<%@page import="java.util.Properties"%>
 <%@page import="eu.blky.wdb.WDBOService"%>
 <%@page import="eu.blky.wdb.Wdb"%>
 <%@page import="eu.blky.wdb.Category"%>
@@ -8,17 +9,7 @@ Wdb oTmp = null;
 WDBOService ddboService = WDBOService.getInstance();  
 try{ 	 
 	uid = request.getParameter("uid").toString();
-	// brute search
-	for (Wdb theNextTmp :ddboService.getObjects()){
-		if (uid .indexOf(theNextTmp.getUID().toString()) == 1){
-			System.out.println(" brute search miss FOUND UID#"+uid);
-			oTmp  = theNextTmp;
-			break;
-		}else{
-			System.out.println(" brute search miss ["+uid+"]=====!  {"+theNextTmp.getUID().toString()+"}");
-		}
-	}
-	
+ 	oTmp  = new Wdb((Properties)ddboService.getByUID(uid)); 
 	String newPropertyName =  request.getParameter("newPropertyName");
 	String newPropertyVal =  request.getParameter("newPropertyVal");
 	oTmp.addProperty(newPropertyName, newPropertyVal);
