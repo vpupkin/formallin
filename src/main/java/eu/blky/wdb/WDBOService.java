@@ -108,15 +108,22 @@ public class WDBOService {
 	public LinkedList<Wdb> getObjects() { 
 		Set<String> keySet = getCache().keySet();
 		LinkedList<Wdb> retval = new LinkedList( );
-		Cache cacheTmp = getCache();
+		
 		for (String key:keySet){
-			Properties  o = (Properties) cacheTmp.get(key);
+			Properties  o = (Properties) getByUID(key);//Cache cacheTmp = getCache(); cacheTmp.get(key);
+			if (o == null) {
+				System.out.println("NULL@"+key);
+				continue;
+			}
 			Wdb e = new Wdb (o); 
-			String id = key;
-			int endIndex = id .indexOf(".properties");
-			id = id .indexOf(".properties")>0?id .substring(0, endIndex ):id;
-			id = o.getProperty("id");
-			e.setId(id);
+			if (key.replace("=..=", ":").indexOf(e.getUID().toString())!=0){ // base64->UID check
+//				String id = key;
+//				int endIndex = id .indexOf(".properties");
+//				id = id .indexOf(".properties")>0?id .substring(0, endIndex ):id;
+//				id = o.getProperty("id");
+//				e.setId(id);
+				throw new WdbException("for Object#"+key+"# expected UID:"+ (e.getUID().toString())  );
+			}
 			retval .add(e );
 		}
 		return retval ;
@@ -174,32 +181,29 @@ public class WDBOService {
 		UID uid = oPar.getUID();
 		String key = uid.toString() +".properties";
 		Object o = cTmp.get(key);
-		if (o==null){ // very 1st store
+		// check for old instances
+		String oldKey = oPar.getId()+".proper"+"ties";
+		Object oldTmp = cTmp.get(oldKey);
+				
+		//  0 0 - persist all dependencies also
+		if (o==null && oldTmp == null){ // very 1st store
 			Properties oParAsProperties = oPar.toProperties(); 
 			cTmp.put( key , oParAsProperties  );
-		}else{
-			// this object is already in store - 
-			//	update by storing the same obj with new uid, if some change occur 
-			Properties properties = oPar.toProperties();
-			// workaround for base64 encoding in the properties
-			if (o instanceof Properties){
-				for (Object keyToCompare :properties.keySet()){
-					Object aTmp =  properties.get(keyToCompare);
-					Object bTmp =  ((Properties)o).get(keyToCompare);
-					// assumes the storend obj is always String
-					//unEscape base64
-					bTmp = (""+bTmp).replace("\\=","=").replace("\\:",":");
-					//assert aTmp.equals(bTmp);
-					if (aTmp.equals(bTmp))continue;
-					else {
-						//flush(oPar);
-						//throw new WdbException("Object changend asynchronously!");
-						cTmp.put(key,  properties);
-					}
-				}
-			}else{
-				throw new WdbException("Object with id:{"+uid+"} is corrupted!");
+		// 0 1	|| // 1 1  	-> merge
+		}else if (o==null && oldTmp != null && oldTmp instanceof Properties){ // MERGE: replace Old + New = New ==>> Old
+			Wdb toMerge = new Wdb( (Properties)oldTmp );
+			for (String propName:oPar.getPropertyNames()){
+				toMerge.setProperty( propName, oPar.getProperty(propName));
+			}
+			for (String propName:toMerge.getPropertyNames()){
+				toMerge.setProperty( propName, toMerge.getProperty(propName));
 			} 
+			Properties mergedProperties = toMerge.toProperties();
+			cTmp.put( oldKey , mergedProperties  ); 
+		// 1 0 -- fully new Object 	
+		}else{ // SAME as 0 0 
+			Properties properties = oPar.toProperties();
+			cTmp.put(key,  properties);
 		}
 	}
 
@@ -214,6 +218,13 @@ public class WDBOService {
 		Cache cTmp = getCategoryCache()  ;
 		Object id = oPar._()+".properties";
 		cTmp.remove(id);
+	}
+	public Object  getByUID(Object key) {
+		Cache cacheTmp = getCache(); 
+		String keyTmp = (""+key).replace("\\", "");
+		keyTmp = keyTmp.indexOf(".properties")>0?keyTmp:(keyTmp+".properties");
+		Object retval = cacheTmp.get(keyTmp);
+		return retval ;
 	} 
 	
 }

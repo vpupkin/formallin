@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.server.UID;
 import java.util.ArrayList; 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -112,12 +113,33 @@ public class Wdb extends LinkedList<Wdb>{
 	protected void init(Properties o) {
 		this.oName = o.getProperty("oName");
 		this.id=  o.getProperty("id") ;
+		this.setId(id); // synch with uid
 		String catsTmp = o.getProperty("categories");
 		if (null!= catsTmp)
-		for (String cat :catsTmp .split(",")){
-
+		for (String cat :catsTmp .split(",")){ 
 			pushCategory( cat  );
 		} 
+		for (Object pkey:o.keySet()){
+			Object value = o.get(pkey);
+			if (value instanceof Wdb){
+				this.props.put(""+pkey, (Wdb) value);
+			}else if (value instanceof String){
+				System.out.println(" loadind...");
+				for (String uid:((String) value).split(",")){
+					try{
+						System.out.println(" :"+uid);
+						WDBOService ddboService = WDBOService.getInstance();
+						String key = uid.substring(1,uid.length()-1 );
+						Object toPushProps =  ddboService.getByUID(key); // "[" "]"
+						Wdb toPush = new Wdb((Properties)toPushProps);
+						this.props.put(""+pkey, toPush);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				 
+			}
+		}
 	}
 
 	private void pushCategory(String catPar) {
@@ -138,6 +160,7 @@ public class Wdb extends LinkedList<Wdb>{
 	public UID uid = null;
 	
 	public void setProperty(String propertyName, String valuePar) {
+		if (valuePar == null) return; // nothing to do
 		this.uid = null; // reset uid for any Object-change  
 		WDBOService ddboService = WDBOService.getInstance();
 		Category theC = ddboService.createCategory(propertyName, this);
@@ -148,6 +171,12 @@ public class Wdb extends LinkedList<Wdb>{
 	@Override
 	public int size(){
 		return super.size() +1;
+	}
+	
+	public List<String> getPropertyNames(){
+		// TODO toooooo dirty impl...!
+		return Arrays.asList(  props.keySet().toArray(new String[]{}));
+		
 	}
 	
 	public void setProperty(String key, Wdb valuePar) {
@@ -301,8 +330,10 @@ public class Wdb extends LinkedList<Wdb>{
 				if (the1st .size()>1){
 					for (int i=1;i<the1st .size();i++){
 						Wdb theNext = the1st .get(i-1);
-						val+=prefix;
-						val+="["+theNext.getUID()+"]";//"["+theNext._()+"]";
+						String idAsStr = "["+theNext.getUID()+"]";
+						if (val.indexOf(idAsStr)>=0)continue; // DISTINCT!
+						String toConcat = prefix + idAsStr;
+						val+=toConcat;//"["+theNext._()+"]";
 					}
 				}
 				retval.put(key, val );

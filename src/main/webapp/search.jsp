@@ -12,11 +12,13 @@ try{
 int count = 0;
 
 for ( Wdb o:ddboService.getObjects()){
+	if (o == null) continue;
+	if (o._() == null) continue;
 	// here "like" is most effective search! :)
 	if (o._().indexOf(toSearch)  == -1 ) continue; 	
 %>
 <tr>
-	<td><%=count++%></td><td><%=o%> </td><td><%=o.uid%> </td><td><%=o.getUID()%> </td><td><%=o.getCategories()%> </td>
+	<td><%=count++%></td><td><%=o%> </td><td><a href="edit.jsp?uid='<%=o.uid%>'"><%=o.uid%></a> </td><td><%=o.getUID()%> </td><td><%=o.getCategories()%> </td>
 </tr>
 <% 			
 }		 
