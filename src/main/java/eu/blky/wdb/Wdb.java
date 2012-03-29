@@ -132,7 +132,7 @@ public class Wdb extends LinkedList<Wdb>{
 						String key = uid.substring(1,uid.length()-1 );
 						Object toPushProps =  ddboService.getByUID(key); // "[" "]"
 						Wdb toPush = new Wdb((Properties)toPushProps);
-						this.props.put(""+pkey, toPush);
+						this.setProperty(""+pkey, toPush);//!!  WRONG is :: this.props.put(""+pkey, toPush);
 					}catch(Exception e){
 						e.printStackTrace();
 					}
