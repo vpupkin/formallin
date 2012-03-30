@@ -39,6 +39,7 @@ public class Wdb extends LinkedList<Wdb>{
 	 */
 	private static final long serialVersionUID = 453774634348463145L;
 	private static final Set<Wdb> EMPTY_SET = Collections.unmodifiableSet( new HashSet<Wdb>());
+	private static final boolean TRACE = false;
 	protected String oName;
 	private static long cluniqueId=0;
 	protected String id = ""+cluniqueId++;
@@ -122,19 +123,19 @@ public class Wdb extends LinkedList<Wdb>{
 		for (Object pkey:o.keySet()){
 			Object value = o.get(pkey);
 			if (value instanceof Wdb){
-				this.props.put(""+pkey, (Wdb) value);
+				if (TRACE)this.props.put(""+pkey, (Wdb) value);
 			}else if (value instanceof String){
-				System.out.println(" loadind...");
+				if (TRACE)System.out.println(" loadind...");
 				for (String uid:((String) value).split(",")){
 					try{
-						System.out.println(" :"+uid);
+						if (TRACE)System.out.println(" :"+uid);
 						WDBOService ddboService = WDBOService.getInstance();
 						String key = uid.substring(1,uid.length()-1 );
 						Object toPushProps =  ddboService.getByUID(key); // "[" "]"
 						Wdb toPush = new Wdb((Properties)toPushProps);
 						this.setProperty(""+pkey, toPush);//!!  WRONG is :: this.props.put(""+pkey, toPush);
 					}catch(Exception e){
-						e.printStackTrace();
+						if (TRACE)e.printStackTrace();
 					}
 				}
 				 
@@ -296,7 +297,7 @@ public class Wdb extends LinkedList<Wdb>{
 			DataInput stored64 = new DataInputStream(in64 );
 			this.uid =  UID.read(stored64 ); 
 			this.id = this.uid.toString();
-			System.out.println("key:"+key+"->"+uid+"-->> keyID--|"+ this.id );
+			if (TRACE)System.out.println("key:"+key+"->"+uid+"-->> keyID--|"+ this.id );
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
