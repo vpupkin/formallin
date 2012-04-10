@@ -1,9 +1,12 @@
 package eu.blky.wdb;
 
+import gform.GForm;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import net.sf.jsr107cache.Cache;
 
@@ -24,6 +27,9 @@ import junit.framework.TestCase;
  * Creation:  19.12.2011::14:22:57<br> 
  */
 public class BasicTest extends TestCase {
+
+	private static Logger log = Logger.getLogger(BasicTest.class.getName());
+
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -65,6 +71,30 @@ public class BasicTest extends TestCase {
 		assertEquals(book.getProperty("Author").getProperty("First name")._(), "Cervantes");
 		
 	}
+	
+	public void testProps() {
+		Wdb author = new Wdb ("Author");
+		author.setProperty("First name", "Miguel");
+		author.addProperty("Second name", "Cervantes");
+		assertEquals(author.getProperty("First name")._(), "Miguel");
+
+		Wdb  book = new Wdb ("Book");
+		book.setProperty("Title", "Don Quijote");
+		book.setProperty("Author", author);
+		assertEquals(book.getProperty("Author").getProperty("First name")._(), "Miguel");
+		Wdb secondAuthor = new Wdb ("Author");
+		author.setProperty("First name", "Vasja");
+		author.setProperty("Second name", "Pupkin");
+		book.setProperty("Author", secondAuthor); 
+		WDBOService ddboService = WDBOService.getInstance(); 
+		ddboService.flush(book);
+		assertEquals(book.getProperty("Author").getProperty("First name")._(), "Vasja");
+		assertEquals(book.getProperty("Author").getProperty("First name")._(), "Vasja");
+		assertEquals(book.getProperty("Author").getProperty("First name").size(),2);
+		assertEquals(book.getProperty("Author").size( ),2);
+		assertEquals(book.getProperty("Author").get(1 ),author);
+		 
+	}	
 	
 	public void test2nd() {
 		Wdb author = new Wdb ("Author");
@@ -215,7 +245,7 @@ public class BasicTest extends TestCase {
 		WDBOService ddboService = WDBOService.getInstance();
 		
 		ddboService .flush(rack);
-		assertEquals(7 , ddboService.getCategories().size());
+		assertEquals(7 , ddboService.getCategories().size());//[Shelf, First name, Author, Second name, Book, Color, Title]
 	}
 	
  
@@ -318,7 +348,7 @@ public class BasicTest extends TestCase {
 		assertEquals(book.getProperties("Title")._(), "Don Quijote");
 		assertEquals(book.getProperties("CDU").size(), 2);
 		assertEquals(book.getProperties("CDU")._(), "821.134.2-31\"17");
-		assertEquals(book.getProperties("CDU").get(0)._(), "821.134.2-31\"16");// this property is versioned and shifted into prev. position
+		assertEquals(book.getProperties("CDU").get(1)._(), "821.134.2-31\"16");// this property is versioned and shifted into prev. position
 		
 		//book.addProperty("Author", author);
 		book.setProperty("Author", translator);
