@@ -148,7 +148,13 @@ public class WDBOService {
 			Set<Wdb> categoriesTmp = next.getCategories();
 			// workaroud for contains!!!! 8-EEE
 			for (Wdb cToCheck:categoriesTmp){
-				if (cToCheck._().equals(  catTmp._())  || cToCheck._() == catTmp._() || 1==2){
+				if  (cToCheck == null) continue;
+				if  (catTmp == null) continue;
+				String _1 = cToCheck._();
+				String _2 = catTmp._();
+				if  (_1 == null) continue;
+				if  (_2 == null) continue;				
+				if (_1.equals(  _2)  || cToCheck._() == catTmp._() || 1==2){
 					retval.add(next);
 					break;
 				}
@@ -162,7 +168,10 @@ public class WDBOService {
 	private Category getCategory(String categoryPar) {
 		Category retval = null;
 		for (Category cTmp :getCategories()){
-			if (cTmp._().equals(categoryPar)){
+			if (cTmp == null) continue;
+			String catNameTmp = cTmp._();
+			if (catNameTmp  == null) continue;
+			if (catNameTmp.equals(categoryPar)){
 				retval = cTmp;
 				break;
 			}
