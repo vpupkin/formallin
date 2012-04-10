@@ -1,6 +1,9 @@
 package eu.blky.wdb;
 
+import gform.GForm;
+
 import java.util.Map;
+import java.util.logging.Logger;
 
 import cc.co.llabor.cache.BasicCacheFactory;
 
@@ -18,6 +21,8 @@ import net.sf.jsr107cache.CacheFactory;
  * Creation:  05.03.2012::11:59:43<br> 
  */
 public class WdbCacheFactory extends BasicCacheFactory implements CacheFactory{
+
+	private static Logger log = Logger.getLogger(WdbCacheFactory.class.getName());
 
 	@Override
 	public Cache createCache(Map env) throws CacheException {

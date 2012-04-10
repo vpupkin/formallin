@@ -1,11 +1,14 @@
 package eu.blky.wdb;
 
+import gform.GForm;
+
 import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import cc.co.llabor.cache.Manager;
 
@@ -29,6 +32,7 @@ public class WDBOService {
 	}
 	
 	private Wdb nullObject = null;
+	private static Logger log = Logger.getLogger(GForm.class.getName());
 	private Wdb getNullObject(){
 		nullObject = nullObject ==null?new Wdb("nullObject"):nullObject ;
 		return nullObject ;
@@ -44,7 +48,7 @@ public class WDBOService {
 	public Category createCategory(String key ) {  
 		Wdb nullObject2 = getNullObject();
 		UID uid = nullObject2.getUID();
-		System.out.println(uid);
+		log.fine(""+uid);
 		
 		return createCategory(key, nullObject2);
 	}

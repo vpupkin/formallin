@@ -1,6 +1,9 @@
 package eu.blky.wdb;
  
+import gform.GForm;
+
 import java.util.Properties; 
+import java.util.logging.Logger;
 
 /** 
  * <b>Description:TODO</b>
@@ -18,6 +21,7 @@ public class Category extends Wdb{
 	 */
 	private static final long serialVersionUID = 6581281116649476813L;
 	private Category parent;
+	private static Logger log = Logger.getLogger(Category.class.getName());
 
 
 	public Category(String oName) {
