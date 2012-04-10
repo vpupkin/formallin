@@ -53,6 +53,7 @@ public class WDBOService {
 		return createCategory(key, nullObject2);
 	}
 	public Category createCategory(String key, Wdb forObject) { 
+		key = key.replace("\\","").trim();
 		Cache categoryCache = getCategoryCache();
 		Category retval  = null;
 		synchronized(Cache.class){
@@ -145,7 +146,7 @@ public class WDBOService {
 		LinkedList<Wdb> objects = getObjects();
 		Category catTmp = this.getCategory(categoryPar);
 		for (Wdb next: objects){			
-			Set<Wdb> categoriesTmp = next.getCategories();
+			List<Wdb> categoriesTmp = next.getCategoriesAsList();
 			// workaroud for contains!!!! 8-EEE
 			for (Wdb cToCheck:categoriesTmp){
 				if  (cToCheck == null) continue;

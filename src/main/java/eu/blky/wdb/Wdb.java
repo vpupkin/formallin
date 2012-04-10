@@ -43,6 +43,7 @@ public class Wdb extends LinkedList<Wdb>{
 	private static final long serialVersionUID = 453774634348463145L;
 	private static final Set<Wdb> EMPTY_SET = Collections.unmodifiableSet( new HashSet<Wdb>());
 	private static final boolean TRACE = false;
+	private static final List<Wdb> EMPTY_LIST = Collections.unmodifiableList ( new ArrayList<Wdb>());;
 	protected String oName;
 	private static long cluniqueId=0;
 	protected String id = ""+cluniqueId++;
@@ -119,9 +120,11 @@ public class Wdb extends LinkedList<Wdb>{
 		this.id=  o.getProperty("id") ;
 		this.setId(id); // synch with uid
 		String catsTmp = o.getProperty("categories");
-		if (null!= catsTmp)
-		for (String cat :catsTmp .split(",")){ 
-			pushCategory( cat  );
+		if (null!= catsTmp) {
+			String[] split = catsTmp .split(",");
+			for (String cat :split){ 
+				pushCategory( cat  );
+			}
 		} 
 		for (Object pkey:o.keySet()){
 			Object value = o.get(pkey);
@@ -155,8 +158,25 @@ public class Wdb extends LinkedList<Wdb>{
 		if (this.categories ==null){
 			this.categories  =  catPar ;
 		}else{
-			this.categories  .add(catPar);
+			if (this.categories.indexOf(catPar)>=0){//(this.categories  .contains(catPar )){
+				// DO nothing
+			}else
+				this.categories.add(catPar);
 		} 
+	}
+	
+	@Override 
+	public int indexOf(Object oPar){
+		int retval = -1;
+		if (oPar instanceof Wdb && oPar!=null)
+		for(int i=0;i<this.size();i++){
+			Wdb oTmp = this.get(i);
+			if (oTmp!=null && oPar!=null && oTmp._().equals(((Wdb)oPar)._() ) && oTmp.equals(oPar)){
+				retval = i;
+				break;
+			}
+		}
+		return retval;
 	}
 
 	Map<String,Wdb> props = new HashMap<String, Wdb>();
@@ -210,12 +230,10 @@ public class Wdb extends LinkedList<Wdb>{
 		return retval;
 	}
 	
-	public Set<Wdb> getCategories() {
-		if ( this.categories == null) return EMPTY_SET;
-		Set<Wdb> retval = this.categories.toSet();
-		return retval ;
+	public Set<Wdb> getCategories() { 
+		return new HashSet<Wdb>( this.getCategoriesAsList() ) ;
 	}
-	
+ 
 	protected Set<Wdb> toSet() {
 		Set<Wdb> retval = new HashSet<Wdb>();
 		retval .add(this);
@@ -231,6 +249,19 @@ public class Wdb extends LinkedList<Wdb>{
 
 	public void addCategory(Category theC) { 
 		this.pushCategory( theC );
+	} 
+	
+	
+	public void delCategory(Category theC) { 
+		if (this.categories ==null){
+			return; // ignore
+		}else{
+			if (this.categories.indexOf(theC)>=0){//(this.categories  .contains(catPar )){
+				this.categories.remove(theC);
+			}else if ( 	this.categories.equals( theC ) ){
+				this.categories = null;
+			}
+		} 		
 	} 
 	
 	public void addProperty(String propertyName, String valuePar) {
@@ -397,6 +428,18 @@ public class Wdb extends LinkedList<Wdb>{
 			e.printStackTrace();
 		}
 		
+		return retval;
+	}
+
+	public List<Wdb> getCategoriesAsList() {
+		if ( this.categories == null) return EMPTY_LIST;
+		List<Wdb> retval = //this.categories.toSet();
+			new ArrayList<Wdb>();
+		int size = this.categories.size();
+		for (int i=0;i<size;i++){
+			Wdb e = this.categories.get(i);
+			retval .add(e );
+		}
 		return retval;
 	}
 	

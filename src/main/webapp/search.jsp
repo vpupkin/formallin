@@ -18,7 +18,7 @@ for ( Wdb o:ddboService.getObjects()){
 	if (o._().indexOf(toSearch)  == -1 ) continue; 	
 %>
 <tr>
-	<td><%=count++%></td><td><%=o%> </td><td><a href="edit.jsp?uid='<%=o.uid%>'"><%=o.uid%></a> </td><td><%=o.getUID()%> </td><td><%=o.getCategories()%> </td>
+	<td><%=count++%></td><td><%=o%> </td><td><a href="edit.jsp?uid='<%=o.uid%>'"><%=o.uid%></a> </td><td><%=o.getUID()%> </td><td><%=o.getCategoriesAsList()%> </td>
 </tr>
 <% 			
 }		 
