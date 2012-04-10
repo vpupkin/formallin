@@ -1,5 +1,7 @@
 package eu.blky.wdb;
  
+import gform.GForm;
+
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map; 
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /** 
  * <b>Description:TODO</b>
@@ -159,6 +162,7 @@ public class Wdb extends LinkedList<Wdb>{
 	Map<String,Wdb> props = new HashMap<String, Wdb>();
 	private Category  categories = null;
 	public UID uid = null;
+	private static Logger log = Logger.getLogger(Wdb.class.getName());
 	
 	public void setProperty(String propertyName, String valuePar) {
 		if (valuePar == null) return; // nothing to do
@@ -245,7 +249,11 @@ public class Wdb extends LinkedList<Wdb>{
 		Wdb retval = null;
 		try{
 			retval =  this.element().getProperty(key);
-			Wdb returnContainer = new Wdb(retval.toProperties());			
+			Properties properties = retval.toProperties();
+			
+			Wdb returnContainer = new Wdb(properties);	
+			//"X-Get" - pushing requested propertyName into Temp-Obj
+			//returnContainer.setProperty("X-Get", key) ;
 			Wdb myProp = this.props.get(key);
 			returnContainer .add(myProp );			
 			retval  =returnContainer ; 
@@ -278,8 +286,9 @@ public class Wdb extends LinkedList<Wdb>{
 
 	private String _(int i) {  
 		String xGet = this.props.get("X-Get")._();
-		Wdb retval = this.get(i).props.get(xGet) ;
-		return retval._();  
+		Wdb wdb = this.get(i);
+		String retval =  (wdb == null) ?oName : wdb.props.get(xGet)._() ;
+		return retval;  
 	}
 
 	public  Wdb  getProperties(String key) { 
@@ -304,6 +313,13 @@ public class Wdb extends LinkedList<Wdb>{
 		}
 	}
 
+
+	@Override
+	public Wdb get(int index) {
+		if (index == 0) return this;
+		else return super.get(index-1);
+	}
+	
 	public Object getId() {
 		return this.id ;
 	}
