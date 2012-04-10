@@ -1,4 +1,7 @@
+<%@page import="eu.blky.wdb.Wdb"%>
+<%@page import="eu.blky.wdb.WDBOService"%>
 <html><body>
+<h4>object comparison by categories</h4>
 <%
 String toSearch = ""; 
 String prefixTmp = ",";
@@ -21,7 +24,6 @@ try{
 }catch(Exception e){e.printStackTrace();}
 %>
 
-
 <%
 String toDel =  request.getParameter("toDel");
 
@@ -40,8 +42,8 @@ for (String searchStr:(toSearch).toString().split(",")){
 	}
 %>
 <form method="post" id="deLETEFORM<%=searchStr.hashCode()%>">
-<input type="text" id="toDel" name="toDel" class="toDel" value="<%=searchStr%>">
-<input type="submit" value="del">
+<input type="text"  id="toDel" name="toDel" class="toDel" value="<%=searchStr%>">
+<input type="submit" value="delete this category from comparison">
 </form>
 <%
 }
@@ -50,9 +52,25 @@ if (toDel !=null) // DELETE
 %>
 
 
-<h4><%=("".equals(toSearch)?"ender one or more categories (separated by comma) for compare...":session.getAttribute("toSearch").toString())%></h4>
+<h4><%=("".equals(toSearch)?"enter one or more categories (separated by comma) for compare...":session.getAttribute("toSearch").toString())%></h4>
 <form method="post" id="ADDFORM">
 	<input type="text" id="toSearch" name="toSearch" class="toSearch" value="">
-<input type="submit" >
+<input type="submit"  value="add Category (es) to compare..">
 </form>
+
+<%
+WDBOService ddboService = WDBOService.getInstance(); 
+for (String catTmp  :toSearch.split(",")){
+	if ("".equals(catTmp.trim()))continue;
+	%><h3><%=catTmp%></h3><%
+	try{
+		for (Wdb o:ddboService.getObjects(catTmp)){
+		%><%=o %><br><% 	
+		}// oWdbs
+	}catch(Throwable e){e.printStackTrace(); } 
+}// Cats
+%>
+
+
+
 </body></html>
