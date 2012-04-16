@@ -165,17 +165,21 @@ public class Wdb extends LinkedList<Wdb>{
 		} 
 	}
 	
-	@Override 
-	public int indexOf(Object oPar){
+	@Override
+	public int indexOf(Object oPar) {
 		int retval = -1;
-		if (oPar instanceof Wdb && oPar!=null)
-		for(int i=0;i<this.size();i++){
-			Wdb oTmp = this.get(i);
-			if (oTmp!=null && oPar!=null && oTmp._().equals(((Wdb)oPar)._() ) && oTmp.equals(oPar)){
-				retval = i;
-				break;
+		if (oPar instanceof Wdb && oPar != null)
+			for (int i = 0; i < this.size(); i++) {
+				Wdb oTmp = this.get(i);
+				if (oTmp != null && oPar != null)
+					if (oTmp._() != null)
+						if (((Wdb) oPar)._() != null)
+							if (oTmp._().equals(((Wdb) oPar)._()))
+								if (oTmp.equals(oPar)) {
+									retval = i;
+									break;
+								}
 			}
-		}
 		return retval;
 	}
 

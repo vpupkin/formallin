@@ -41,10 +41,15 @@ public class BasicTest extends TestCase {
 		super.tearDown();
 	 	WDBOService ddboService = WDBOService.getInstance();
 	 	long startTime = System.currentTimeMillis();
+	 	// kill all objects
 	 	LinkedList<Wdb> objects = ddboService.getObjects();
 		for (Wdb o :objects){
 			ddboService.remove(o);
 		}
+		// kill caches
+		//SearchCache\
+		WDBOService.getInstance().resetSearchCache();
+		
 		long execTime = System.currentTimeMillis()-startTime ;
 		collectStatistics("deleteAll", objects.size(), execTime ); 
 		for (Wdb o :ddboService.getCategories() ){
@@ -395,7 +400,7 @@ public class BasicTest extends TestCase {
 		
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
 		LinkedList<Wdb> objects = ddboService.getObjects();
-		int y = oCounter*2+5;// !+!+!+5???? !!! x*2+3;
+		int y = oCounter*2+5 -1;// !+!+!+5???? !!! x*2+3; -nullObject
 		assertEquals(oCounter+" !=!="+objects, y , objects.size());
 		assertEquals(oCounter , ddboService.getObjects("Author").size());
 
@@ -430,7 +435,7 @@ public class BasicTest extends TestCase {
 			ddboService.flush(translator);
 			oCounter ++; 
 		} 
-		int y = oCounter*2+9;//TODO +  ??? x*2+3;
+		int y = oCounter*2+9-1;//TODO +  ??? x*2+3; - nullObject
 		assertEquals(oCounter , ddboService.getObjects("Author").size()); 
 		LinkedList<Wdb> objects = ddboService.getObjects();
 		assertEquals(""+objects, y , objects.size());
