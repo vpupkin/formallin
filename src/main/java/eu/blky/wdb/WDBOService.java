@@ -4,6 +4,7 @@ import gform.GForm;
 
 import java.rmi.server.UID;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -26,6 +27,7 @@ import net.sf.jsr107cache.Cache;
 public class WDBOService {
 	
 	static final WDBOService me = new WDBOService();
+	private static final long MAX_CACHED_AGE = 60 * 10 * 1000; // 10 minutes
 
 	public static WDBOService getInstance() {
 		return me;
@@ -142,7 +144,27 @@ public class WDBOService {
 	 * @return
 	 */
 	public LinkedList<Wdb> getObjects(String categoryPar) { 
+		Cache searchCache = getCache("SearchCache");
 		LinkedList<Wdb> retval = new LinkedList<Wdb>();
+		Properties cachedSearch = (Properties) searchCache.get(categoryPar+".properties");
+		do {
+			if (cachedSearch != null){
+				Date timestampTmp = new Date(Long.parseLong(cachedSearch.getProperty("timestamp")));
+				if ((System.currentTimeMillis() - timestampTmp.getTime() )>MAX_CACHED_AGE) break;  // this entry will be autoexpired after 10 minues
+				String ids = cachedSearch.getProperty( categoryPar);
+				for (String idTmp :ids.split(",")){
+					Object oTmp = getByUID(idTmp);
+					if (oTmp instanceof Properties){
+						oTmp = new Wdb((Properties)oTmp);
+						retval.add((Wdb) oTmp);
+					}					
+				}
+				return retval;
+			}
+		}while (1==2);
+		cachedSearch  = new Properties();
+		
+		 
 		LinkedList<Wdb> objects = getObjects();
 		Category catTmp = this.getCategory(categoryPar);
 		for (Wdb next: objects){			
@@ -159,9 +181,20 @@ public class WDBOService {
 					retval.add(next);
 					break;
 				}
-			}
-			
+			} 
 		}
+		 
+		String indexTmp = "";
+		String prefix = "";
+		for (Wdb theNext:retval){
+			indexTmp  +=prefix; 
+			indexTmp +=theNext.getId();
+			prefix = ", ";
+		}
+		cachedSearch .setProperty(categoryPar, indexTmp);
+		cachedSearch .setProperty("timestamp", ""+System.currentTimeMillis());
+		searchCache.put(categoryPar+".properties", cachedSearch );
+		
 		return retval;
 		
 	}
@@ -238,8 +271,15 @@ public class WDBOService {
 		String keyTmp = (""+key).replace("\\", "");
 		keyTmp = keyTmp.indexOf(".properties")>0?keyTmp:(keyTmp+".properties");
 		keyTmp  = keyTmp .replace("\'", "");
+		keyTmp  = keyTmp .replace("\\", "");
+		keyTmp  = keyTmp .replace(":", "=..=");
+		keyTmp = keyTmp.trim();
 		Object retval = cacheTmp.get(keyTmp);
 		return retval ;
+	}
+	public void resetSearchCache() {
+		 Cache cTmp = getCache("SearchCache");
+		 cTmp.clear();
 	} 
 	
 }
