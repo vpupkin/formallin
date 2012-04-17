@@ -3,6 +3,7 @@
 <%@page import="eu.blky.wdb.Category"%>
 <table> 
 <%
+long startTmp = System.currentTimeMillis(); 
 WDBOService ddboService = WDBOService.getInstance(); 
 String toSearch = ""; // default search will produse all DB-items
 try{ 
@@ -29,3 +30,4 @@ for ( Wdb o:ddboService.getObjects()){
 <input type="submit" value="search">
 </form>
 
+gentime:<%=System.currentTimeMillis() -startTmp %> ms.
