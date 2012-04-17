@@ -478,8 +478,8 @@ public class BasicTest extends TestCase {
 		return retval ;
 	}
 	private String getFSName(){
-		String fn []=new String[]{"Ivan","Elena","Tom","Jim","Anton","Lev"  };
-		String sn []=new String[]{"Pushkin", "Oruel", "Twen", "Sharapov", "Nikamoto", "Down" };
+		String fn []=new String[]{"Ivan","Elena","Tom","Jim","Anton","Lev" , "Taras" , "Dalaj" };
+		String sn []=new String[]{"Pushkin", "Oruel", "Twen", "Sharapov", "Nikamoto", "Shevchenko", "Lama" , "Down" };
 		String retval =
 			fn[(int) ((Math.random()*10000)%fn.length)]+" "+  
 			sn[(int) ((Math.random()*10000)%sn.length)]+" "+    
@@ -526,14 +526,15 @@ public class BasicTest extends TestCase {
 		String land []=new String[]{"Russia", "USA"  , "Germany", "Spain", "Vietnam" , "Canada", "Japan", "China", "Germany", "France"};
 		String city []=new String[]{"New York", "Moscow", "Berlin", "Tokio"};
 		String planet []=new String[]{"Moon", "Mars" , "Earth" , "Venera"};
+		String street []=new String[]{"a", "b" , "c" , "d"};
 		Wdb retval = new Wdb ();
 		retval .addCategory(categoryAddrress);
 		retval .setProperty("land", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryC));
 		retval .setProperty("city", new Wdb(city[(int) ((Math.random()*10000)%city.length)] , categoryG));
 		retval .setProperty("house", new Wdb( ""+(int) ((Math.random()*10000)%land.length)  , categoryD));
-		retval .setProperty("street", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryE));
-		retval .setProperty("floor", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryF));
-		retval .setProperty("planet", new Wdb(land[(int) ((Math.random()*10000)%land.length)] , categoryP));
+		retval .setProperty("street", new Wdb(street[(int) ((Math.random()*10000)%street.length)] , categoryE));
+		retval .setProperty("floor", new Wdb(""+(int) ((Math.random()*10000)%1111) , categoryF));
+		retval .setProperty("planet", new Wdb(planet[(int) ((Math.random()*10000)%planet.length)] , categoryP));
  		return retval ;
 	}
 	
@@ -541,7 +542,7 @@ public class BasicTest extends TestCase {
 	public void testGalaLib(){  
 		
 		WDBOService ddboService = WDBOService.getInstance(); 
-		int toCreate = (int) (20 + System.nanoTime()%20);
+		int toCreate = (int) (200 + System.nanoTime()%20);
 		long start = System.currentTimeMillis();
 		Category categoryA = ddboService.createCategory("Author");
 		Category categoryB = ddboService.createCategory("Book");
