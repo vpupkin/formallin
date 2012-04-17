@@ -43,10 +43,12 @@ public class Wdb extends LinkedList<Wdb>{
 	private static final long serialVersionUID = 453774634348463145L;
 	private static final Set<Wdb> EMPTY_SET = Collections.unmodifiableSet( new HashSet<Wdb>());
 	private static final boolean TRACE = false;
-	private static final List<Wdb> EMPTY_LIST = Collections.unmodifiableList ( new ArrayList<Wdb>());;
+	private static final List<Wdb> EMPTY_LIST = Collections.unmodifiableList ( new ArrayList<Wdb>());
+	public static final boolean LAZY = true;
 	protected String oName;
 	private static long cluniqueId=0;
 	protected String id = ""+cluniqueId++;
+	private volatile Properties tempToIni = null;
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
 		String EOP  = "";
@@ -106,8 +108,16 @@ public class Wdb extends LinkedList<Wdb>{
 		this.pushCategory(oName);
 	}
 
+	
+	
+	
 	public Wdb(Properties o) {
-		init(o);
+		if (!LAZY){
+			init(o);
+		}else{
+			// store the Init-info to temporary...
+			tempToIni  = o;
+		}
 	}
 
 	public Wdb(String valuePar, Category theC) {
@@ -116,9 +126,7 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	protected void init(Properties o) {
-		this.oName = o.getProperty("oName");
-		this.id=  o.getProperty("id") ;
-		this.setId(id); // synch with uid
+		//initId(o);
 		String catsTmp = o.getProperty("categories");
 		if (null!= catsTmp) {
 			String[] split = catsTmp .split(",");
@@ -147,6 +155,12 @@ public class Wdb extends LinkedList<Wdb>{
 				 
 			}
 		}
+	}
+
+	public void initId(Properties o) {
+		this.oName = o.getProperty("oName");
+		this.id=  o.getProperty("id") ;
+		this.setId(id); // synch with uid
 	}
 
 	private void pushCategory(String catPar) {
@@ -280,6 +294,8 @@ public class Wdb extends LinkedList<Wdb>{
 	 * @return
 	 */
 	public Wdb getProperty(String key) {
+		checkLazyInit();
+		
 		Category catTmp = new Category(key);
 		Wdb retval = null;
 		try{
@@ -312,6 +328,7 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	public String _() { 
+		checkLazyInit();
 		if (this.props.containsKey("X-Get")){
 			return _(0);
 		}
@@ -355,7 +372,22 @@ public class Wdb extends LinkedList<Wdb>{
 		else return super.get(index-1);
 	}
 	
+	
+	private void checkLazyInit(){
+		if (LAZY   && tempToIni != null) {
+			initId(tempToIni); 
+			init(tempToIni);
+			//initId(tempToIni);
+			tempToIni = null;
+		}
+	}
+	
 	public Object getId() {
+		if (LAZY   && tempToIni != null) {
+			//init(tempToIni);
+			initId(tempToIni);
+			//tempToIni = null;
+		}
 		return this.id ;
 	}
 
@@ -436,6 +468,7 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	public List<Wdb> getCategoriesAsList() {
+		checkLazyInit();
 		if ( this.categories == null) return EMPTY_LIST;
 		List<Wdb> retval = //this.categories.toSet();
 			new ArrayList<Wdb>();

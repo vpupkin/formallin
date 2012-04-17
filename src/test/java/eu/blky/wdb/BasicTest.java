@@ -1,19 +1,13 @@
 package eu.blky.wdb;
 
-import gform.GForm;
-
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
-
 import net.sf.jsr107cache.Cache;
-
 import cc.co.llabor.cache.Manager;
-
 import com.thoughtworks.xstream.XStream;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
@@ -46,6 +40,10 @@ public class BasicTest extends TestCase {
 		for (Wdb o :objects){
 			ddboService.remove(o);
 		}
+		
+		// kill categories
+		WDBOService.getInstance().resetCategories();
+		
 		// kill caches
 		//SearchCache\
 		WDBOService.getInstance().resetSearchCache();
@@ -491,7 +489,7 @@ public class BasicTest extends TestCase {
 		
 		WDBOService ddboService = WDBOService.getInstance();
 
-		int toCreate = (int) (101 + System.nanoTime()%100);
+		int toCreate = (int) (11 + System.nanoTime()%100);
 		long start = System.currentTimeMillis();
 		for (int i = 0; i < toCreate; i++) {
 			Category categoryA = ddboService.createCategory("Author");
@@ -542,7 +540,7 @@ public class BasicTest extends TestCase {
 	public void testGalaLib(){  
 		
 		WDBOService ddboService = WDBOService.getInstance(); 
-		int toCreate = (int) (200 + System.nanoTime()%20);
+		int toCreate = (int) (20 + System.nanoTime()%20);
 		long start = System.currentTimeMillis();
 		Category categoryA = ddboService.createCategory("Author");
 		Category categoryB = ddboService.createCategory("Book");
