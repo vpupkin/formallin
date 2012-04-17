@@ -123,12 +123,8 @@ public class WDBOService {
 				continue;
 			}
 			Wdb e = new Wdb (o); 
-			if (key.replace("=..=", ":").indexOf(e.getUID().toString())!=0){ // base64->UID check
-//				String id = key;
-//				int endIndex = id .indexOf(".properties");
-//				id = id .indexOf(".properties")>0?id .substring(0, endIndex ):id;
-//				id = o.getProperty("id");
-//				e.setId(id);
+			//  validate the new Object
+			if (!Wdb.LAZY && key.replace("=..=", ":").indexOf(e.getUID().toString())!=0){ 
 				throw new WdbException("for Object#"+key+"# expected UID:"+ (e.getUID().toString())  );
 			}
 			retval .add(e );
@@ -169,7 +165,7 @@ public class WDBOService {
 		Category catTmp = this.getCategory(categoryPar);
 		for (Wdb next: objects){			
 			List<Wdb> categoriesTmp = next.getCategoriesAsList();
-			// workaroud for contains!!!! 8-EEE
+			// Workaround for contains!!!! 8-EEE
 			for (Wdb cToCheck:categoriesTmp){
 				if  (cToCheck == null) continue;
 				if  (catTmp == null) continue;
@@ -258,7 +254,8 @@ public class WDBOService {
 
 	public void remove(Wdb oPar) {
 		Cache cTmp = getCache()  ;
-		Object id = oPar.getId()+".properties";
+		Object id2 = oPar.getId();
+		Object id = id2+".properties";
 		cTmp.remove(id);
 	}
 	public void removeCategory(Wdb oPar) {
@@ -277,6 +274,11 @@ public class WDBOService {
 		Object retval = cacheTmp.get(keyTmp);
 		return retval ;
 	}
+	
+	public void resetCategories() {
+		 Cache cTmp = getCategoryCache();
+		 cTmp.clear();
+	} 
 	public void resetSearchCache() {
 		 Cache cTmp = getCache("SearchCache");
 		 cTmp.clear();
