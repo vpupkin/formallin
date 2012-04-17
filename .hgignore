@@ -4,5 +4,6 @@ syntax: glob
 *.log
 .classpath
 .project
+.filecache
 syntax: regexp
 ^target$
