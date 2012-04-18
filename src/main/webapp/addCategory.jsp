@@ -10,7 +10,7 @@ int count = 0;
 for (Category catTmp :ddboService.getCategories()){
 %>
 <tr>
-	<td><%=count++%></td><td><%= catTmp%></td>
+	<td><%=count++%></td><td><%= catTmp._()%></td>
 </tr>
 <%
 }

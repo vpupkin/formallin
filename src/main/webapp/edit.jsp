@@ -58,7 +58,7 @@ try{
 	for (Wdb catTmp :oTmp.getCategoriesAsList()){
 		%><!-- <%=catTmp %> -->
  <td>		
- <form method="get" id="delCategoryForm" >
+ <form method="post" id="delCategoryForm" >
 	-<input type="submit"   value="<%=catTmp._() %>"  name="delCategory"  id="<%=catTmp.hashCode()%>">
 	<input type="hidden"   value="<%=uid%>"  name="uid"  id="<%=uid%>">
 	</input>
@@ -100,7 +100,7 @@ if (oTmp!=null){
 //WDBOService ddboService = WDBOService.getInstance();
 for (Category catTmp :ddboService.getCategories()){
 	//TODO if (oTmp!=null && oTmp.getCategories()!=null && oTmp.getCategoriesAsList().contains(catTmp ))continue;
-%><td><form method="get" id="addCategoryForm" >
+%><td><form method="post" id="addCategoryForm" >
 	+<input type="submit"   value="<%=catTmp._() %>"  name="addCategory"  id="<%=catTmp.hashCode()%>">
 	<input type="hidden"   value="<%=uid%>"  name="uid"  id="<%=uid%>">
 	</input>
