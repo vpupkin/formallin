@@ -166,18 +166,9 @@ public class WDBOService {
 		for (Wdb next: objects){			
 			List<Wdb> categoriesTmp = next.getCategoriesAsList();
 			// Workaround for contains!!!! 8-EEE
-			for (Wdb cToCheck:categoriesTmp){
-				if  (cToCheck == null) continue;
-				if  (catTmp == null) continue;
-				String _1 = cToCheck._();
-				String _2 = catTmp._();
-				if  (_1 == null) continue;
-				if  (_2 == null) continue;				
-				if (_1.equals(  _2)  || cToCheck._() == catTmp._() || 1==2){
-					retval.add(next);
-					break;
-				}
-			} 
+			if (categoriesTmp.contains(catTmp)){
+				retval.add(next);
+			}
 		}
 		 
 		String indexTmp = "";
@@ -194,6 +185,8 @@ public class WDBOService {
 		return retval;
 		
 	}
+	
+
 
 	private Category getCategory(String categoryPar) {
 		Category retval = null;

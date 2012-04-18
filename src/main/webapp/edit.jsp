@@ -27,7 +27,7 @@ do{ try{
 	Category catTTT = ddboService.createCategory(addCategory, oTmp); 
 	oTmp.addCategory(catTTT);
 	ddboService.flush(oTmp);
-}catch(Exception e){e.printStackTrace();}
+}catch(Exception e){errmessage = ""+e.getMessage();e.printStackTrace();}
 }while(1==2);
 
 
@@ -41,14 +41,14 @@ do{ try{
 	Category catTTT = ddboService.createCategory(delCategory, oTmp); 
 	oTmp.delCategory(catTTT);
 	ddboService.flush(oTmp);
-}catch(Exception e){e.printStackTrace();}
+}catch(Exception e){errmessage = ""+e.getMessage();e.printStackTrace();}
 }while(1==2);
 
 %>
 <h1><%=errmessage%></h1> 
-<%=uid==null?"":uid%>
+<h3>uid:<%=uid==null?"":uid%></h3>
 <br>
-<%=oTmp==null?"":oTmp%>
+<%=oTmp==null?"":oTmp._()%>
 <h4>categories</h4>
 <table><tr>
 <%
@@ -59,7 +59,7 @@ try{
 		%><!-- <%=catTmp %> -->
  <td>		
  <form method="get" id="delCategoryForm" >
-	-<input type="submit"   value="<%=catTmp %>"  name="delCategory"  id="<%=catTmp.hashCode()%>">
+	-<input type="submit"   value="<%=catTmp._() %>"  name="delCategory"  id="<%=catTmp.hashCode()%>">
 	<input type="hidden"   value="<%=uid%>"  name="uid"  id="<%=uid%>">
 	</input>
   </form>
@@ -75,10 +75,10 @@ try{
 try{
 if (oTmp!=null){
 		for (String pKey:oTmp.getPropertyNames()){
-			String p1 = oTmp.getProperty(pKey)._();
+			Wdb p1 = oTmp.getProperty(pKey);
 %>
 <li>
-<%=pKey %>::<%=p1 %>
+<%=pKey %>:::<%=p1._()%>
 </li>
 <%
 		}
@@ -101,7 +101,7 @@ if (oTmp!=null){
 for (Category catTmp :ddboService.getCategories()){
 	//TODO if (oTmp!=null && oTmp.getCategories()!=null && oTmp.getCategoriesAsList().contains(catTmp ))continue;
 %><td><form method="get" id="addCategoryForm" >
-	+<input type="submit"   value="<%=catTmp %>"  name="addCategory"  id="<%=catTmp.hashCode()%>">
+	+<input type="submit"   value="<%=catTmp._() %>"  name="addCategory"  id="<%=catTmp.hashCode()%>">
 	<input type="hidden"   value="<%=uid%>"  name="uid"  id="<%=uid%>">
 	</input>
   </form></td>
