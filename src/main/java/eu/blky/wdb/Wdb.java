@@ -99,7 +99,8 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 	
 	@Override
-	public boolean contains(Object o){ 
+	public boolean contains(Object o){
+		if (o == this) return true;
 		int index = indexOf( o);
 		// ala compare with non-persisted category LIKE this.equals(o)
 		if (this instanceof Category && o instanceof Category && this.oName.equals( ((Category )o).oName)){

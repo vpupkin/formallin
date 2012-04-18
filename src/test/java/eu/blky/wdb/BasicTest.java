@@ -372,37 +372,32 @@ public class BasicTest extends TestCase {
 	
 
 	public void testDDBO(){
-	 	WDBOService ddboService = WDBOService.getInstance();
-		
-		
-		
+	 	WDBOService ddboService = WDBOService.getInstance(); 
 		List<Category> categories = ddboService.getCategories();
-		assertEquals(""+categories, 0, categories.size());// by default the category-list is empty
-		
+		assertEquals(""+categories, 0, categories.size());// by default the category-list is empty 
 		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
 		Category category1 = ddboService.createCategory("Author", translator);
 		translator.addProperty("First name", "Ivanov");
 		translator.addProperty("Second name", "Sergey");
 		translator.addProperty("role", "translator"); 
-		translator.addCategory(category1) ; 
-				
-		 
+		translator.addCategory(category1) ;  
 		ddboService.flush(translator);		
+		assertEquals(1, ddboService.getObjects("Author").size());
 		translator.setProperty("oneMoreProp", "value");
-		ddboService.flush(translator);
-		
-		assertEquals(2, ddboService.getObjects("Author").size());
+		ddboService.flush(translator); 
+		assertEquals(1, ddboService.getObjects("Author").size());
+		// TODO TO BE OR NOT TO BE THAT ISSSSSSSSSSSSSSssssssssssssssssssssssssssssssssssssssss.................................... _THE Q!!!!!!!!!_!_!_!__!_______!_!??!?!?!?
 		assertEquals(2, ddboService.getObjects("Author").size());
 		//TODO assertEquals(6, ddboService.getObjects().size());
 		//TODO assertEquals(6, ddboService.getObjects().size());
-		assertEquals(2, ddboService.getObjects("Author").size());
-		
- 
+		assertEquals(2, ddboService.getObjects("Author").size()); 
 	}	
+	
+	
+	
 	/**
 	 * 
 	 */
-
 	public void testCreateWdbo(){
 		Wdb  translator = new Wdb (("Author"));//new Wdb (new Category2("Author"));
 		translator.addProperty("First name", "Ivanov");

@@ -166,7 +166,7 @@ public class WDBOService {
 		for (Wdb next: objects){			
 			List<Wdb> categoriesTmp = next.getCategoriesAsList();
 			// Workaround for contains!!!! 8-EEE
-			if (categoriesTmp.contains(catTmp)){
+			if (categoriesTmp.contains(catTmp) && !retval.contains(next)){
 				retval.add(next);
 			}
 		}
