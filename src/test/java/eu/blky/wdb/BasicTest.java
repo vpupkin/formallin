@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 import net.sf.jsr107cache.Cache;
 import cc.co.llabor.cache.Manager;
@@ -209,7 +210,80 @@ public class BasicTest extends TestCase {
 		assertEquals( titles.size(),2 ); // TODO WTF!?
 		 
 	}
+
 	
+
+	public void testCategoryAddRemove() {
+		Wdb author = new Wdb ("Author");
+		author.setProperty("First name", "Cervantes");
+		author.addProperty("Second name", "Miguel");
+		
+		Category bookCat = new Category("book");
+		Category proseCat = new Category(bookCat, "prose");
+		
+		Wdb  book = new Wdb ("Book");
+		book.addCategory(proseCat); 
+		
+		WDBOService ddboService = WDBOService.getInstance();
+		// initial add
+		ddboService .flush(book);
+		assertEquals(  ddboService.getObjects().size(),5);
+		assertEquals(  ddboService.getObjects("Book").size(),1);
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories(). size(),2);
+		// del category
+		book  =  ddboService.getObjects("Book").get(  0 );
+		book  .delCategory(proseCat);
+		// before persistence the state is the same  
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories(). size(),2);
+		
+		
+		// persist
+		ddboService .flush(book);		
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories(). size(),1);
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(),  ddboService.getObjects("Book").get(  0 ) .getCategories() ._() ,"Book");
+		
+	}
+	
+
+	
+	public void testCategoryAddRemoveAddRemove() {
+		testCategoryAddRemove();
+		WDBOService ddboService = WDBOService.getInstance();
+		Wdb book = ddboService.getObjects("Book").get(  0 );
+		assertEquals( ""+ book  .getCategories(), book  .getCategories() ._() ,"Book");
+		
+		Category bookCat = new Category("Book");
+		Category proseCat = new Category(bookCat, "prose");
+		Category scifiCat = new Category(bookCat, "scifi");
+		
+		// no persistence
+		book.addCategory(proseCat);
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories() ._() ,"Book");
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories().size() ,1);
+		Wdb  categories = book  .getCategories();
+		assertTrue( ""+ categories, categories.contains(proseCat) );
+		assertTrue( ""+ categories, categories.contains(bookCat) );
+		assertFalse ( ""+ categories, categories.contains(scifiCat) );
+		
+		book.addCategory(scifiCat);
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories() ._() ,"Book");
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories().size() ,1);
+		//assertEquals( ""+ book  .getCategories(),"[Book, prose, scifi]", ""+book  .getCategories() );
+		assertTrue( ""+ categories, categories.contains(proseCat) );
+		assertTrue( ""+ categories, categories.contains(bookCat) );
+		assertTrue(  ""+ categories, categories.contains(scifiCat) );
+		
+		
+		// persist all
+		ddboService.flush(book);
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories() ._() ,"Book");
+		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories().size() ,3);
+		//assertEquals( ""+ book  .getCategories(),"[Book, prose, scifi]", ""+book  .getCategories() );
+		assertTrue( ""+ categories, categories.contains(proseCat) );
+		assertTrue( ""+ categories, categories.contains(bookCat) );
+		assertTrue(  ""+ categories, categories.contains(scifiCat) );
+		
+	}	
 	
 	
 	public void test2ndCategoryFlush() {

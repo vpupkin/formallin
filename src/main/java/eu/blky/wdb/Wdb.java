@@ -98,6 +98,16 @@ public class Wdb extends LinkedList<Wdb>{
 		// 
 	}
 	
+	@Override
+	public boolean contains(Object o){ 
+		int index = indexOf( o);
+		// ala compare with non-persisted category LIKE this.equals(o)
+		if (this instanceof Category && o instanceof Category && this.oName.equals( ((Category )o).oName)){
+			index = 0;
+		}
+		return index>=0;
+	}	
+	
 	/**
 	 * @deprecated
 	 * @author vipup
@@ -126,7 +136,7 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	protected void init(Properties o) {
-		//initId(o);
+		//init categories
 		String catsTmp = o.getProperty("categories");
 		if (null!= catsTmp) {
 			String[] split = catsTmp .split(",");
@@ -134,7 +144,13 @@ public class Wdb extends LinkedList<Wdb>{
 				pushCategory( cat  );
 			}
 		} 
+		//init properties
 		for (Object pkey:o.keySet()){
+			// SKIP reserved
+			if ("categories".equals(pkey))continue;
+			if ("id".equals(pkey))continue;
+			if ("oName".equals(pkey))continue;
+			// fill the Obj
 			Object value = o.get(pkey);
 			if (value instanceof Wdb){
 				if (TRACE)this.props.put(""+pkey, (Wdb) value);
@@ -169,6 +185,8 @@ public class Wdb extends LinkedList<Wdb>{
 		pushCategory(catTmp);
 	}
 	private void pushCategory(Category catPar) { 
+		//checkLazyInit();
+		getId();
 		if (this.categories ==null){
 			this.categories  =  catPar ;
 		}else{
@@ -177,6 +195,11 @@ public class Wdb extends LinkedList<Wdb>{
 			}else
 				this.categories.add(catPar);
 		} 
+	}
+	
+	@Override
+	public boolean add(Wdb e) {
+		return super.add(e);
 	}
 	
 	@Override
@@ -240,16 +263,17 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 	private int diffCategory(Wdb a, Wdb b) {
 		int retval = 0;
-		Set<Wdb> categoriesA = a.getCategories();
-		Set<Wdb> categoriesB = b.getCategories();
+		Wdb  categoriesA = a.getCategories();
+		Wdb  categoriesB = b.getCategories();
 		for (Wdb cA:categoriesA){
 			if(categoriesB.contains(cA))retval++;
 		}
 		return retval;
 	}
 	
-	public Set<Wdb> getCategories() { 
-		return new HashSet<Wdb>( this.getCategoriesAsList() ) ;
+	public Wdb getCategories() { 
+		checkLazyInit(); 
+		return this.categories  ;
 	}
  
 	protected Set<Wdb> toSet() {
@@ -271,11 +295,12 @@ public class Wdb extends LinkedList<Wdb>{
 	
 	
 	public void delCategory(Category theC) { 
+		checkLazyInit();
 		if (this.categories ==null){
 			return; // ignore
 		}else{
 			if (this.categories.indexOf(theC)>=0){//(this.categories  .contains(catPar )){
-				this.categories.remove(theC);
+				this.categories.remove(theC);				
 			}else if ( 	this.categories.equals( theC ) ){
 				this.categories = null;
 			}
@@ -294,14 +319,12 @@ public class Wdb extends LinkedList<Wdb>{
 	 * @return
 	 */
 	public Wdb getProperty(String key) {
-		checkLazyInit();
-		
+		checkLazyInit(); 
 		Category catTmp = new Category(key);
 		Wdb retval = null;
 		try{
 			retval =  this.element().getProperty(key);
-			Properties properties = retval.toProperties();
-			
+			Properties properties = retval.toProperties(); 
 			Wdb returnContainer = new Wdb(properties);	
 			//"X-Get" - pushing requested propertyName into Temp-Obj
 			//returnContainer.setProperty("X-Get", key) ;
@@ -310,23 +333,16 @@ public class Wdb extends LinkedList<Wdb>{
 			retval  =returnContainer ; 
 		}catch(Exception e){
 			retval = this.props.get(key);
-		}
-		 
-		
-//		Wdb retval = new Wdb (pTmp._(), catTmp );		//this.props.get(key);
-//		//retval.setProperty("X-Get", key);
-//		
-//		Iterator<Wdb> i = pTmp.iterator();//this.iterator();
-//		for (;i.hasNext();){
-//			Wdb next = i.next();
-//			if (next.getProperty(key)!=null){
-//				retval.add(next);
-//			}
-//		}
+		} 
 		return retval;
 
 	}
 
+	/**
+	 * gives back always inited value (in cmp with toString() for ex. )
+	 * @author vipup
+	 * @return
+	 */
 	public String _() { 
 		checkLazyInit();
 		if (this.props.containsKey("X-Get")){
@@ -374,11 +390,11 @@ public class Wdb extends LinkedList<Wdb>{
 	
 	
 	private void checkLazyInit(){
-		if (LAZY   && tempToIni != null) {
-			initId(tempToIni); 
+		getId();
+		if (LAZY   && tempToIni != null && tempToIni.getProperty("initedAt") == null) {
 			init(tempToIni);
 			//initId(tempToIni);
-			tempToIni = null;
+			tempToIni.setProperty("initedAt", ""+System.currentTimeMillis());//tempToIni = null;			
 		}
 	}
 	
@@ -392,6 +408,7 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 
 	public UID getUID() {
+		checkLazyInit();
 		synchronized (UID.class) {
 			if (this.uid == null){
 				synchronized (UID.class) {
@@ -404,7 +421,8 @@ public class Wdb extends LinkedList<Wdb>{
 		return this.uid; 
 	}
 
-	public Properties toProperties() {		 
+	public Properties toProperties() {	
+			checkLazyInit();
 			Properties retval = new Properties();
 			//retval.putAll(this.props);
 			for (String key:props.keySet()){

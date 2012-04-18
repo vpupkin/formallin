@@ -1,6 +1,7 @@
 <%@page import="eu.blky.wdb.Wdb"%>
 <%@page import="eu.blky.wdb.WDBOService"%>
 <html><body>
+
 <h4>object comparison by categories</h4>
 <%
 String toSearch = ""; 
@@ -70,6 +71,13 @@ for (String catTmp  :toSearch.split(",")){
 	}catch(Throwable e){e.printStackTrace(); } 
 }// Cats
 %>
+
+
+<h4>links</h4>
+<a href="add.jsp">add.jsp</a>
+<a href="edit.jsp">edit.jsp</a>
+<a href="search.jsp">search.jsp</a>
+<a href="addCategory.jsp">addCategory.jsp</a>
 
 
 
