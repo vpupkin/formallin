@@ -241,6 +241,7 @@ public class Wdb extends LinkedList<Wdb>{
 	}
 	
 	public List<String> getPropertyNames(){
+		checkLazyInit(); 
 		// TODO toooooo dirty impl...!
 		return Arrays.asList(  props.keySet().toArray(new String[]{}));
 		

@@ -1,11 +1,31 @@
 package eu.blky.wdb;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
+
 import net.sf.jsr107cache.Cache;
 import cc.co.llabor.cache.Manager;
 import com.thoughtworks.xstream.XStream;
@@ -653,6 +673,89 @@ public class BasicTest extends TestCase {
 		assertEquals( ddboService.getObjects("Book").size(), toCreate);
 		
 		collectStatistics("createGala", toCreate, l); 
+	}
+	
+	
+	public void testSearch() throws CorruptIndexException, IOException, ParseException{
+		// creating some objects...
+		try{
+			testGalaLib();
+		}catch(Throwable e){}
+		
+		// Creating IndexWriter object and specifying the path where Indexed
+		//files are to be stored.
+		String pathTmp ="./.indexfile";
+		StandardAnalyzer analyzerTmp = new StandardAnalyzer(Version.LUCENE_30);
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
+		Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
+		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp, mfl  );
+		            
+		WDBOService ddboService = WDBOService.getInstance();      
+		
+		// Reading each line present in the file.
+		for (Wdb o:ddboService.getObjects() )
+		{
+			// Getting each field present in an Obj 
+			                
+			// For each row, creating a document and adding data to the document with the associated fields.
+			org.apache.lucene.document.Document document = new org.apache.lucene.document.Document();
+			String scUri = "";
+			for (String key :o.getPropertyNames()){
+				Wdb propVal = o.getProperty(key);
+				try{
+					document.add(new Field(key, propVal._(),Field.Store.YES,Field.Index.ANALYZED));
+					scUri+=key;
+					scUri+=",";
+				}catch(Exception e){
+					//e.printStackTrace();
+				}
+			}
+			// store full path as "cs-uri"
+			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.ANALYZED));
+			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.ANALYZED));
+			
+			                 
+			// Adding document to the index file.
+			indexWriter.addDocument(document);
+		}        
+		indexWriter.optimize();
+		indexWriter.close();
+				
+		
+		
+		
+		// ##2 - search
+		
+		{
+			// Creating Searcher object and specifying the path where Indexed files are stored.
+			Searcher searcher = new IndexSearcher(dirTmp);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+
+			// Printing the total number of documents or entries present in the index file.
+			System.out.println("Total Documents = "+searcher.maxDoc()) ;
+			            
+			// Creating the QueryParser object and specifying the field name on 
+			//which search has to be done.
+			QueryParser parser = new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
+			            
+			// Creating the Query object and specifying the text for which search has to be done.
+			Query query = parser.parse("/book");
+			            
+			// Below line performs the search on the index file and
+			WdbCollector hits = new WdbCollector();
+			searcher.search(query, hits);
+			            
+			// Printing the number of documents or entries that match the search query.
+			System.out.println("Number of matching documents = "+ hits.length());
+
+			// Printing documents (or rows of file) that matched the search criteria.
+			for (int i = 0; i < hits.length(); i++)
+			{
+			    Document doc = hits.doc(i); 
+			    System.out.println(doc.get("uid")+ " = "+ doc.get("cs-uri")+ " " );
+			}			
+		}
+		
 	}
 	
 
