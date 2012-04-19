@@ -255,7 +255,7 @@ public class BasicTest extends TestCase {
 		WDBOService ddboService = WDBOService.getInstance();
 		// initial add
 		ddboService .flush(book);
-		assertEquals(  ddboService.getObjects().size(),5);
+		assertEquals(  6, ddboService.getObjects().size());
 		assertEquals(  ddboService.getObjects("Book").size(),1);
 		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories(). size(),2);
 		// del category
@@ -418,10 +418,10 @@ public class BasicTest extends TestCase {
 		assertEquals(expected, actual);
 		assertEquals(1, ddboService.getObjects("Author").size());
 		// TODO TO BE OR NOT TO BE THAT ISSSSSSSSSSSSSSssssssssssssssssssssssssssssssssssssssss.................................... _THE Q!!!!!!!!!_!_!_!__!_______!_!??!?!?!?
-		assertEquals(2, ddboService.getObjects("Author").size());
+		assertEquals(1, ddboService.getObjects("Author").size());
 		//TODO assertEquals(6, ddboService.getObjects().size());
 		//TODO assertEquals(6, ddboService.getObjects().size());
-		assertEquals(2, ddboService.getObjects("Author").size()); 
+		assertEquals(1, ddboService.getObjects("Author").size()); 
 	}	
 	
 	
@@ -496,11 +496,11 @@ public class BasicTest extends TestCase {
 			oCounter ++; 
 		}
 		
-		assertEquals(oCounter , ddboService.getObjects("Author").size());
+		assertEquals(oCounter /oCounter /* the object should be overwrite */ , ddboService.getObjects("Author").size());
 		LinkedList<Wdb> objects = ddboService.getObjects();
-		int y = oCounter*2+5 -1;// !+!+!+5???? !!! x*2+3; -nullObject
-		assertEquals(oCounter+" !=!="+objects, y , objects.size());
-		assertEquals(oCounter , ddboService.getObjects("Author").size());
+		int y = oCounter+5;// now +6
+		assertEquals(oCounter+" !=!="+objects+"["+y+"]", y , objects.size());
+		assertEquals(oCounter /oCounter /* the object should be overwrite */ , ddboService.getObjects("Author").size());
 
 		assertEquals(y , ddboService.getObjects().size());
 		
@@ -533,15 +533,15 @@ public class BasicTest extends TestCase {
 			ddboService.flush(translator);
 			oCounter ++; 
 		} 
-		int y = oCounter*2+9-1;//TODO +  ??? x*2+3; - nullObject
-		assertEquals(oCounter , ddboService.getObjects("Author").size()); 
+		int y = oCounter+10;//TODO +  new Forme1
+		assertEquals(oCounter /* ! ! */ /oCounter, ddboService.getObjects("Author").size()); 
 		LinkedList<Wdb> objects = ddboService.getObjects();
-		assertEquals(""+objects, y , objects.size());
+		assertEquals("::"+objects+":["+objects.size()+"]"+y+"::::"+oCounter, y , objects.size());
 		
 		long searchStart = System.currentTimeMillis();
 		int searchCount=22;
 		for (int i=0;i<searchCount;i++){
-			assertEquals(oCounter , ddboService.getObjects("Author").size());
+			assertEquals(oCounter /* ! ! */ /oCounter , ddboService.getObjects("Author").size());
 		}
 		long searchEnd = System.currentTimeMillis();
 		long msPerSearch = ((searchEnd -searchStart)/searchCount);
@@ -605,8 +605,8 @@ public class BasicTest extends TestCase {
 		} 
 		long l = System.currentTimeMillis() - start;
 		System.out.println("#"+toCreate+"items created in "+l+" ms");
-		assertEquals( ddboService.getObjects("Author").size(), toCreate);
-		assertEquals( ddboService.getObjects("Book").size(), toCreate);
+		assertEquals( toCreate/toCreate /* the object should be overwrite */, ddboService.getObjects("Author").size() );
+		assertEquals( ddboService.getObjects("Book").size(), toCreate/toCreate /* the object should be overwrite */);
 		
 		collectStatistics("create", toCreate, l); 
 	}
@@ -689,8 +689,8 @@ public class BasicTest extends TestCase {
 		
 		long l = System.currentTimeMillis() - start;
 		System.out.println("#"+toCreate+"items created in "+l+" ms");
-		assertEquals( ddboService.getObjects("Author").size(), toCreate);
-		assertEquals( ddboService.getObjects("Book").size(), toCreate);
+		assertEquals( ddboService.getObjects("Author").size(), toCreate/toCreate /* the object should be overwrite */);
+		assertEquals( ddboService.getObjects("Book").size(), toCreate/toCreate /* the object should be overwrite */);
 		
 		collectStatistics("createGala", toCreate, l); 
 	}
