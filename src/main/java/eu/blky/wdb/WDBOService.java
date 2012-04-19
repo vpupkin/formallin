@@ -225,6 +225,10 @@ public class WDBOService {
 		if (o==null && oldTmp == null){ // very 1st store
 			Properties oParAsProperties = oPar.toProperties(); 
 			cTmp.put( key , oParAsProperties  );
+			Object idTMP1 = oPar.getId();
+			String newidTMP2 = oParAsProperties.getProperty("id");
+			System.out.println("idTMP1:"+idTMP1 +" ====>>>> "+newidTMP2);
+			oPar.setId(newidTMP2 );
 		// 0 1	|| // 1 1  	-> merge
 		}else if (o==null && oldTmp != null && oldTmp instanceof Properties){ // MERGE: replace Old + New = New ==>> Old
 			Wdb toMerge = new Wdb( (Properties)oldTmp );
@@ -238,8 +242,12 @@ public class WDBOService {
 			cTmp.put( oldKey , mergedProperties  ); 
 		// 1 0 -- fully new Object 	
 		}else{ // SAME as 0 0 
-			Properties properties = oPar.toProperties();
-			cTmp.put(key,  properties);
+			Properties oParAsProperties = oPar.toProperties();
+			cTmp.put(key,  oParAsProperties);
+			Object idTMP1 = oPar.getId();
+			String newidTMP2 = oParAsProperties.getProperty("id");
+			System.out.println("idTMP1:::"+idTMP1 +" ====>>>> "+newidTMP2);
+			oPar.setId(newidTMP2 );
 		}
 	}
 

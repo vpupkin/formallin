@@ -2,6 +2,7 @@ package eu.blky.wdb;
 
 import java.io.File;
 import java.io.IOException;
+import java.rmi.server.UID;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -409,9 +410,12 @@ public class BasicTest extends TestCase {
 		translator.addProperty("role", "translator"); 
 		translator.addCategory(category1) ;  
 		ddboService.flush(translator);		
+		UID expected = translator.getUID();
 		assertEquals(1, ddboService.getObjects("Author").size());
 		translator.setProperty("oneMoreProp", "value");
 		ddboService.flush(translator); 
+		UID actual = translator.getUID();
+		assertEquals(expected, actual);
 		assertEquals(1, ddboService.getObjects("Author").size());
 		// TODO TO BE OR NOT TO BE THAT ISSSSSSSSSSSSSSssssssssssssssssssssssssssssssssssssssss.................................... _THE Q!!!!!!!!!_!_!_!__!_______!_!??!?!?!?
 		assertEquals(2, ddboService.getObjects("Author").size());
@@ -768,9 +772,11 @@ public class BasicTest extends TestCase {
 	
 
 	private void creanDirToIndex() {
-		for (String indexTmp:getDirToIndex() .list()){
-			 new File(getDirToIndex(),indexTmp).delete();
-		}
+		try{
+			for (String indexTmp:getDirToIndex() .list()){
+				 new File(getDirToIndex(),indexTmp).delete();
+			}
+		}catch(Exception e){}
 	}
 
 	int search_1(String queryTmp) throws IOException, ParseException{
