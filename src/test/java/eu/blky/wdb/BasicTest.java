@@ -44,6 +44,9 @@ import junit.framework.TestCase;
 public class BasicTest extends TestCase {
 
 	private static Logger log = Logger.getLogger(BasicTest.class.getName());
+	private int aCount;
+	private int bCount;
+	private int cCount;
 
 
 	protected void setUp() throws Exception {
@@ -74,6 +77,10 @@ public class BasicTest extends TestCase {
 		for (Wdb o :ddboService.getCategories() ){
 			ddboService.removeCategory(o);
 		}	
+		
+		
+		// clean Indexes
+		creanDirToIndex();
 	} 
 	
 	public void test0() {
@@ -634,22 +641,31 @@ public class BasicTest extends TestCase {
 		Category categoryA = ddboService.createCategory("Author");
 		Category categoryB = ddboService.createCategory("Book");
 		Category libCat = new Category("Library");
-		// assumes we habe 5 librarie
+		
+		// assumes we have 5 libraries
 		Wdb libA  = new Wdb ("LibraryAthen", libCat );
+		cCount++;
 		Wdb libB  = new Wdb ("LibraryBerlin", libCat);
+		cCount++;
 		Wdb libC  = new Wdb ("LibraryCologne", libCat );
+		cCount++;
 		
 		
 		for (int i = 0; i < toCreate; i++) {
 			// author 
 			Wdb aTmp = new Wdb(getFSName(), categoryA);
+			aCount++;
 			for (int j=0;j< System.currentTimeMillis()%10;j++){
-				Wdb aAdress = getAddress();
+				Wdb aAdress = getAddress(); 
 				aTmp.setProperty("adress", aAdress );
 			}
 			Wdb birthAdress = getAddress();
 			aTmp.setProperty("birthAdress", birthAdress );
+			
+			// CreateThe Book
 			Wdb bTmp = new Wdb(getTitle(), categoryB);
+			bCount++;
+			 
 
 			bTmp.setProperty("author", aTmp);
 			bTmp.setProperty("published", "" + new Date());
@@ -684,10 +700,11 @@ public class BasicTest extends TestCase {
 		
 		// Creating IndexWriter object and specifying the path where Indexed
 		//files are to be stored.
-		String pathTmp ="./.indexfile";
-		StandardAnalyzer analyzerTmp = new StandardAnalyzer(Version.LUCENE_30);
 		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
-		Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
+
+		StandardAnalyzer analyzerTmp = new StandardAnalyzer(Version.LUCENE_30);
+
+		Directory dirTmp = new SimpleFSDirectory(getDirToIndex() );
 		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp, mfl  );
 		            
 		WDBOService ddboService = WDBOService.getInstance();      
@@ -703,16 +720,27 @@ public class BasicTest extends TestCase {
 			for (String key :o.getPropertyNames()){
 				Wdb propVal = o.getProperty(key);
 				try{
-					document.add(new Field(key, propVal._(),Field.Store.YES,Field.Index.ANALYZED));
-					scUri+=key;
-					scUri+=",";
+					//document.add(new Field(key, propVal._(),Field.Store.YES,Field.Index.ANALYZED));
+					document.add(new Field("propertyName", key,Field.Store.NO ,Field.Index.NOT_ANALYZED_NO_NORMS));
+					//scUri+=key;
+					scUri+=", ";
+				}catch(Exception e){
+					//e.printStackTrace();
+				}
+			}
+			for (Wdb cat :o.getCategoriesAsList()  ){
+				String valTmp = cat._();
+				try{
+					document.add(new Field("category", valTmp,Field.Store.YES,Field.Index.ANALYZED));
+					scUri+=valTmp;
+					scUri+=", ";
 				}catch(Exception e){
 					//e.printStackTrace();
 				}
 			}
 			// store full path as "cs-uri"
-			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.ANALYZED));
-			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.ANALYZED));
+			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.NOT_ANALYZED ));
+			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.NOT_ANALYZED));
 			
 			                 
 			// Adding document to the index file.
@@ -720,13 +748,41 @@ public class BasicTest extends TestCase {
 		}        
 		indexWriter.optimize();
 		indexWriter.close();
-				
 		
+		search_1("  Book  AND Country "); //search_1(" Author   "); search_1(" Book  or  Author");search_1(" B*") search_1(" C*") search_1("Ho*")
+		assertEquals(bCount,search_1("Book", true)); //search_1(" category (Book )") assertEquals(1,assertEquals(1,
+		assertEquals(aCount, search_1("Author", true)); //search_1(" category (Book )") assertEquals(1,
+		assertEquals(cCount, search_1("Library", true)); //search_1(" category (Book )") assertEquals(1,assertEquals(1,
+		search_1("category(Author)", true); //search_1(" category (Book )") assertEquals(1,assertEquals(1,
+		search_1(" category (Planet )");
 		
-		
+	}
+	
+
+	private File getDirToIndex() {
+		String pathTmp ="./.indexfile";
+		File dirToIndex = new File(pathTmp);
+		dirToIndex .deleteOnExit();
+		return dirToIndex;
+	}
+	
+
+	private void creanDirToIndex() {
+		for (String indexTmp:getDirToIndex() .list()){
+			 new File(getDirToIndex(),indexTmp).delete();
+		}
+	}
+
+	int search_1(String queryTmp) throws IOException, ParseException{
+		return search_1(queryTmp, false);
+	}
+	private int search_1(String queryTmp, boolean distinct) throws IOException, ParseException {
 		// ##2 - search
-		
+		int retval = -1;
 		{
+			String pathTmp ="./.indexfile";
+			Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
+			
 			// Creating Searcher object and specifying the path where Indexed files are stored.
 			Searcher searcher = new IndexSearcher(dirTmp);
 			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
@@ -736,28 +792,36 @@ public class BasicTest extends TestCase {
 			            
 			// Creating the QueryParser object and specifying the field name on 
 			//which search has to be done.
-			QueryParser parser = new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
+			QueryParser parser = //new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
+				new QueryParser(Version.LUCENE_30, "category", analyzer);
 			            
 			// Creating the Query object and specifying the text for which search has to be done.
-			Query query = parser.parse("/book");
+			Query query = parser.parse(queryTmp);
 			            
 			// Below line performs the search on the index file and
-			WdbCollector hits = new WdbCollector();
+			WdbCollector hits = new WdbCollector(distinct);
 			searcher.search(query, hits);
 			            
 			// Printing the number of documents or entries that match the search query.
 			System.out.println("Number of matching documents = "+ hits.length());
 
+			retval = hits.length();
 			// Printing documents (or rows of file) that matched the search criteria.
-			for (int i = 0; i < hits.length(); i++)
+			WDBOService ddboService = WDBOService.getInstance();   
+			for (int i = 0; i < retval  ; i++)
 			{
 			    Document doc = hits.doc(i); 
-			    System.out.println(doc.get("uid")+ " = "+ doc.get("cs-uri")+ " " );
+			    Object uidTmp = doc.get("uid");
+				String _ = null;
+				try{
+					_ = ((Wdb)ddboService .getByUID(uidTmp))._();
+				}catch(Exception e){}
+				System.out.println(uidTmp + " = "+ doc.get("cs-uri")+ " "  +"["+ _+"]");
 			}			
 		}
 		
+		return retval;
 	}
-	
 
 	private void collectStatistics(String statName, int toCreate, long l) {
 		Cache c = Manager.getCache("WBDstat");

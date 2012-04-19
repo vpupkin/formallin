@@ -25,7 +25,12 @@ import org.apache.lucene.search.Scorer;
 public class WdbCollector extends Collector {
 
 	private Scorer scorer;
+	private boolean distinct;
 	
+
+	public WdbCollector(boolean distinct) {
+		this.distinct = distinct;
+	}
 
 	@Override
 	public void setScorer(Scorer scorer) throws IOException {
@@ -37,8 +42,22 @@ public class WdbCollector extends Collector {
 	
 	@Override
 	public void collect(int i) throws IOException {
-		this.collected.add(""+i);
-		System.out.println("i="+i+"((("+collected);
+		String e = ""+i;
+		
+		if (distinct ){
+			if (!this.collected.contains(e)){
+				this.collected.add(e);
+			}else{
+				System.out.println("duplicated");
+				return;
+			}
+		}else{
+			this.collected.add(e);
+		}
+		
+		String toPrint = "i="+i+"((("+collected;
+		toPrint = toPrint.length()>80?toPrint.substring(0,40)+"..."+toPrint.substring(toPrint.length()-40):toPrint;
+		System.out.println(toPrint );
 	}
 
 	List<IndexReader> ir = new ArrayList<IndexReader>() ;
