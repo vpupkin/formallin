@@ -36,6 +36,24 @@
 		</plugins>
 	</build>
 	<dependencies>
+	
+		<!-- Experimental :will try to reproduce success from  http://www.drdobbs.com/go-parallel/article/226300241?pgno=3 
+		
+		<dependency>
+	<groupId>org.apache.solr</groupId>
+	<artifactId>solr-core</artifactId>
+	<version>3.5.0</version> 
+</dependency>
+		-->
+
+<dependency>
+	<groupId>org.apache.lucene</groupId>
+	<artifactId>lucene-core</artifactId>
+	<version>3.0.3</version>
+</dependency>
+            
+
+<!-- ordered DEPs -->
 
 		<dependency>
 			<groupId>cc.co.llabor</groupId>
