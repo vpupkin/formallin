@@ -499,6 +499,10 @@ public class Wdb extends LinkedList<Wdb>{
 		}
 		return retval;
 	}
+
+	void injectProperties(Properties oParAsProperties) {
+		this.tempToIni = oParAsProperties; // kein hacken ! :) No Duplications - NO DOUBT!   /////////////////... _?/
+	}
 	
  
 }
