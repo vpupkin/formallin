@@ -1,8 +1,6 @@
 package eu.blky.wdb;
+  
  
-import gform.GForm;
-
-import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
@@ -10,8 +8,7 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream; 
 import java.rmi.server.UID;
 import java.util.ArrayList; 
 import java.util.Arrays;
@@ -450,9 +447,16 @@ public class Wdb extends LinkedList<Wdb>{
 					prefix =", ";
 					for (Wdb cat:categories ){
 						categoriesStr  +=  prefix;
+						if (categoriesStr.indexOf(cat._()+ prefix )>=0){
+							categoriesStr  = categoriesStr  .substring(0,categoriesStr  .length()-1);
+							continue;
+						}
 						categoriesStr  +=  cat._();
 						prefix =", ";
 					}	 
+					// cut last comma...
+					categoriesStr  =categoriesStr  .lastIndexOf(",")==categoriesStr  .length()? categoriesStr  .substring(0,categoriesStr  .length()-1):categoriesStr  ;
+					
 				}
 				if (categoriesStr.length()>0){
 					retval.put("categories", categoriesStr  );
