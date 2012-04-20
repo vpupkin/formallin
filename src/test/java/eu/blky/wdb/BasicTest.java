@@ -268,7 +268,7 @@ public class BasicTest extends TestCase {
 		// persist
 		ddboService .flush(book);		
 		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(), ddboService.getObjects("Book").get(  0 ) .getCategories(). size(),1);
-		assertEquals( ""+ ddboService.getObjects("Book").get(  0 ) .getCategories(),  ddboService.getObjects("Book").get(  0 ) .getCategories() ._() ,"Book");
+		assertEquals( "{{{"+ ddboService.getObjects("Book").get(  0 ) .getCategories()._()+"}}}",  ddboService.getObjects("Book").get(  0 ) .getCategories() ._() ,"Book");
 		
 	}
 	
