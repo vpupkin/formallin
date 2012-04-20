@@ -124,7 +124,7 @@ public class BasicTest extends TestCase {
 		assertEquals(book.getProperty("Author").getProperty("First name")._(), "Vasja");
 		assertEquals(book.getProperty("Author").getProperty("First name").size(),2);
 		assertEquals(book.getProperty("Author").size( ),2);
-		assertEquals(book.getProperty("Author").get(1 ),author);
+		assertEquals(book.getProperty("Author").get(1 )._(),author._());
 		 
 	}	
 	
