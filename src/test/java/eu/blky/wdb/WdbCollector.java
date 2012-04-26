@@ -1,13 +1,9 @@
 package eu.blky.wdb;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.IOException; 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import java.util.List; 
+import org.apache.lucene.document.Document; 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Collector;

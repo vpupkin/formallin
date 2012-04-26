@@ -2,6 +2,8 @@ package eu.blky.wdb;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.rmi.server.UID;
 import java.util.Date;
 import java.util.LinkedList;
@@ -10,6 +12,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -24,6 +30,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -639,9 +646,21 @@ public class BasicTest extends TestCase {
 	
 	public void testGalaLib(){  
 		
-		WDBOService ddboService = WDBOService.getInstance(); 
+		 
 		int toCreate = (int) (20 + System.nanoTime()%20);
 		long start = System.currentTimeMillis();
+		WDBOService ddboService = createSomeObjects(toCreate); 
+		
+		long l = System.currentTimeMillis() - start;
+		System.out.println("#"+toCreate+"items created in "+l+" ms");
+		assertEquals( ddboService.getObjects("Author").size(), toCreate/toCreate /* the object should be overwrite */);
+		assertEquals( ddboService.getObjects("Book").size(), toCreate/toCreate /* the object should be overwrite */);
+		
+		collectStatistics("createGala", toCreate, l); 
+	}
+
+	public WDBOService createSomeObjects(int toCreate) {
+		WDBOService ddboService = WDBOService.getInstance(); 
 		Category categoryA = ddboService.createCategory("Author");
 		Category categoryB = ddboService.createCategory("Book");
 		Category libCat = new Category("Library");
@@ -685,21 +704,15 @@ public class BasicTest extends TestCase {
 		// persist libriries....
 		ddboService.flush(libA); 
 		ddboService.flush(libB); 
-		ddboService.flush(libC); 
-		
-		long l = System.currentTimeMillis() - start;
-		System.out.println("#"+toCreate+"items created in "+l+" ms");
-		assertEquals( ddboService.getObjects("Author").size(), toCreate/toCreate /* the object should be overwrite */);
-		assertEquals( ddboService.getObjects("Book").size(), toCreate/toCreate /* the object should be overwrite */);
-		
-		collectStatistics("createGala", toCreate, l); 
+		ddboService.flush(libC);
+		return ddboService;
 	}
 	
 	
-	public void testSearch() throws CorruptIndexException, IOException, ParseException{
+	public void testSearch() throws CorruptIndexException, IOException, ParseException, InterruptedException, URISyntaxException{
 		// creating some objects...
 		try{
-			testGalaLib();
+			 createSomeObjects(5);
 		}catch(Throwable e){}
 		
 		// Creating IndexWriter object and specifying the path where Indexed
@@ -716,6 +729,14 @@ public class BasicTest extends TestCase {
 		// Reading each line present in the file.
 		for (Wdb o:ddboService.getObjects() )
 		{
+			
+			// store the Obj into Hadoop
+			FSDataOutputStream outTmp = getHadoopOut(""+o.getId());
+			Properties pTmp = o.toProperties();
+			String comments = ""+System.currentTimeMillis();
+			pTmp.store(outTmp, comments );
+			outTmp.close();
+			
 			// Getting each field present in an Obj 
 			                
 			// For each row, creating a document and adding data to the document with the associated fields.
@@ -762,6 +783,44 @@ public class BasicTest extends TestCase {
 		
 	}
 	
+	/**
+	 * // Creating FSDataInputStream object, for reading the data from "Test.txt" file residing on HDFS.
+FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File_DIR));
+
+	 * @author vipup
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException 
+	 * @throws URISyntaxException 
+	 */
+	FSDataOutputStream getHadoopOut(String idPar) throws IOException, InterruptedException, URISyntaxException{
+		// Path where the index files will be stored.
+		String Index_DIR="/IndexFiles/";
+		// Path where the data file is stored.
+		String File_DIR="/DataFile/"+idPar;//o.getId() 
+		// Creating FileSystem object, to be able to work with HDFS
+		File_DIR = File_DIR.replace(":", "_.._");
+		Configuration config = new Configuration();
+		config.set("fs.default.name","hdfs://127.0.0.1:9000/");
+		URI uriTMp = new URI("hdfs://127.0.0.1:9000/");
+		FileSystem dfs = FileSystem.get(uriTMp ,config, "tom");
+		Path pathToOut = new Path(dfs.getWorkingDirectory()+ File_DIR);
+		FSDataOutputStream dfsOut = dfs.create( pathToOut );
+		return dfsOut;
+		
+	}
+	
+	IndexWriter getIndexWriter() throws IOException{
+
+		// Creating a RAMDirectory (memory) object, to be able to create index in memory.
+		RAMDirectory rdir = new RAMDirectory(); 
+		// Creating IndexWriter object for the Ram Directory
+		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_30);
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
+		IndexWriter indexWriter = new IndexWriter (rdir, standardAnalyzer, mfl);		
+		
+		return indexWriter;
+	}
 
 	private File getDirToIndex() {
 		String pathTmp ="./.indexfile";
