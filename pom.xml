@@ -45,7 +45,22 @@
 	<version>3.5.0</version> 
 </dependency>
 		-->
-
+<dependency>
+	<groupId>org.apache.hadoop</groupId>
+	<artifactId>hadoop-core</artifactId>
+	<version>1.0.2</version>
+</dependency>
+            		
+		<dependency>
+	<groupId>org.apache.hadoop</groupId>
+	<artifactId>hadoop-common</artifactId>
+	<version>0.23.1</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.hadoop</groupId>
+	<artifactId>hadoop-hdfs</artifactId>
+	<version>0.23.1</version>
+</dependency>
 <dependency>
 	<groupId>org.apache.lucene</groupId>
 	<artifactId>lucene-core</artifactId>
