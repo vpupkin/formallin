@@ -1,7 +1,12 @@
 package eu.blky.wdb;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.server.UID;
@@ -11,6 +16,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -36,6 +44,11 @@ import org.apache.lucene.util.Version;
 
 import net.sf.jsr107cache.Cache;
 import cc.co.llabor.cache.Manager;
+
+import com.adobe.dp.epub.util.Translit;
+import com.adobe.dp.fb2.FB2AuthorInfo;
+import com.adobe.dp.fb2.FB2Document;
+import com.adobe.dp.fb2.FB2FormatException;
 import com.thoughtworks.xstream.XStream;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -887,7 +900,52 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		
 		return retval;
 	}
+	private int search_2(String queryTmp, boolean distinct, String fiendName) throws IOException, ParseException {
+		// ##2 - search
+		int retval = -1;
+		{
+			String pathTmp ="./.indexfile";
+			Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
+			
+			// Creating Searcher object and specifying the path where Indexed files are stored.
+			Searcher searcher = new IndexSearcher(dirTmp);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 
+			// Printing the total number of documents or entries present in the index file.
+			System.out.println("Total Documents = "+searcher.maxDoc()) ;
+			            
+			// Creating the QueryParser object and specifying the field name on 
+			//which search has to be done.
+			QueryParser parser = //new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
+				new QueryParser(Version.LUCENE_30, fiendName, analyzer);
+			            
+			// Creating the Query object and specifying the text for which search has to be done.
+			Query query = parser.parse(queryTmp);
+			            
+			// Below line performs the search on the index file and
+			WdbCollector hits = new WdbCollector(distinct);
+			searcher.search(query, hits);
+			            
+			// Printing the number of documents or entries that match the search query.
+			System.out.println("Number of matching documents = "+ hits.length());
+
+			retval = hits.length();
+			// Printing documents (or rows of file) that matched the search criteria.
+			WDBOService ddboService = WDBOService.getInstance();   
+			for (int i = 0; i < retval  ; i++)
+			{
+			    Document doc = hits.doc(i); 
+			    Object uidTmp = doc.get("uid");
+				String _ = null;
+				try{
+					_ = ((Wdb)ddboService .getByUID(uidTmp))._();
+				}catch(Exception e){}
+				System.out.println(uidTmp + " = "+ doc.get("cs-uri")+ " "  +"["+ _+"]");
+			}			
+		}
+		
+		return retval;
+	}
 	private void collectStatistics(String statName, int toCreate, long l) {
 		Cache c = Manager.getCache("WBDstat");
 		Properties cachedStat = (Properties) c.get(statName+".properties");
@@ -903,6 +961,298 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		c.put(statName+".properties", cachedStat);
 
 	}
+	
+	
+	
+	public void testFB2() throws IOException, FB2FormatException{
+		
+		String toIndex = "test, test2";
+		for (String fname: toIndex .split(", ")){
+			InputStream fb2in = this.getClass().getClassLoader().getResourceAsStream("fb2/"+fname+".fb2");
+			long startTmp = System.currentTimeMillis();
+			FB2Document doc = new FB2Document(fb2in );
+			long stopTmp = System.currentTimeMillis();			
+			System.out.println(stopTmp - startTmp);			
+
+			System.out.println("T:"+Translit.translit( doc.getTitleInfo().getBookTitle() )); 
+			System.out.println("K:"+doc.getTitleInfo().getKeywords());
+			System.out.println("l:"+doc.getTitleInfo().getLanguage());
+			for (FB2AuthorInfo aTmp :doc.getTitleInfo().getAuthors()){
+				System.out.println("A:"+Translit.translit(aTmp.toString()));
+			}
+			
+			System.out.println("G:"+doc.getTitleInfo().getGenres());
+			System.out.println("S:"+doc.getTitleInfo().getSequences());
+			System.out.println("r:"+doc.getTitleInfo().getTranslators());
+			System.out.println("L:"+doc.getTitleInfo().getSrcLanguage());
+
+			
+			System.out.println("st:"+doc.getSrcTitleInfo() );
+			System.out.println("pi:"+doc.getPublishInfo() );
+			System.out.println("di:"+doc.getDocumentInfo() );
+			System.out.println("L:"+doc.getBodySections() );
+			
+		
+		}
+	}
+	
+	
+	// read only_one_entyry into Bytearray and returnt thr data as separate InputStream 
+	private InputStream copyZipEntry(ZipEntry zeTmp, ZipInputStream zipPar) throws IOException {
+		// copy full zip
+		ByteArrayOutputStream boutTmp = new ByteArrayOutputStream(); 
+		int sizeTmp = (int)zeTmp.getSize();
+		int doneTmp = 0;
+		byte b[] = new byte[sizeTmp];
+		for (;doneTmp <sizeTmp;)
+		try{
+			
+			int readedTmp = zipPar.read(b); 
+			// put to TMP
+			if (readedTmp >0){
+				boutTmp.write(b, 0, readedTmp); // new String(baTnp)
+				doneTmp+=readedTmp;
+			}
+ 		}catch(Exception e){e.printStackTrace();} 
+ 		boutTmp.close();
+		byte[] baTnp = boutTmp.toByteArray();
+		//String string = boutTmp.toString("UTF-8");		final byte[] baTnp = string.getBytes();//ByteArray();
+ 		
+		final ByteArrayInputStream baIntmp = new ByteArrayInputStream (baTnp );
+		 
+		return baIntmp;
+	}	
+	
+	Wdb oTmp = null;
+	void _so(String a, String b){
+		if (b==null) return;
+		System.out.println(a +" = "+Translit.translit(b));
+		Wdb o2bndlevel = oTmp;
+		Wdb lastTmp = oTmp;
+		String[] split = a.replace(".", "/").split("/");
+		for (String pName:split){//oTmp .setProperty(a, b);
+			o2bndlevel = lastTmp.getProperty(pName);
+			if (o2bndlevel ==null){ // level++
+				o2bndlevel  = new Wdb (pName);
+				lastTmp .setProperty(pName, o2bndlevel  );
+			}else{
+				
+			}
+			lastTmp = o2bndlevel;			
+		}
+		lastTmp .setProperty(split[split.length-1], b);
+		
+	}
+	void _so(String a, Object b){
+		if (b!=null)_so(a, b.toString());
+	}	
+
+	void _so(String a, com.adobe.dp.fb2.FB2Section[] b){
+		if (b!=null)
+		for (com.adobe.dp.fb2.FB2Section bTmp :b){
+			_so(a, bTmp);
+		}
+	}	 
+	void _so(String a, com.adobe.dp.fb2.FB2Section b){
+		if (b!=null)_so(a, b.getId() );
+	}	
+	void _so(String a, com.adobe.dp.fb2.FB2SequenceInfo[] b){
+		if (b!=null)
+		for (com.adobe.dp.fb2.FB2SequenceInfo bTmp :b){
+			_so(a, bTmp);
+		}
+	}	 
+	void _so(String a, com.adobe.dp.fb2.FB2SequenceInfo b){
+		if (b==null) return;
+		_so(a+"@Name", b.getName());
+		_so(a+"##", b.getNumber());
+		
+	}
+	void _so(String a, com.adobe.dp.fb2.FB2AuthorInfo[] b){
+		if (b!=null)
+		for (com.adobe.dp.fb2.FB2AuthorInfo bTmp :b){
+			_so(a, bTmp);
+		}
+	}	 
+	void _so(String a, com.adobe.dp.fb2.FB2AuthorInfo b){
+		if (b!=null){
+			_so(a+".FirstName", b.getFirstName() );
+			_so(a+".LastName",   b.getLastName()  );
+			_so(a+".MiddleName",   b.getMiddleName()  );
+			_so(a+".Nickname",  b.getNickname()  );
+			_so(a+".Emails", b.getEmails() );
+			_so(a+".HomePages", b.getHomePages()  );
+		}
+	}
+	
+	void _so(String a, com.adobe.dp.fb2.FB2TitleInfo b){
+		if (b!=null){
+			_so(a+".authors", b.getAuthors()  );
+			_so(a+".Translators", b.getTranslators() );
+			_so(a+".BookTitle", b.getBookTitle()  );
+			_so(a+".Keywords",  b.getKeywords() );
+			_so(a+".Language",  b.getLanguage() );
+			_so(a+".SrcLanguage",  b.getSrcLanguage()  );
+			_so(a+".Genres", b.getGenres());
+		}
+	}
+	void _so(String a, com.adobe.dp.fb2.FB2GenreInfo[] b){
+		if (b!=null)
+		for (com.adobe.dp.fb2.FB2GenreInfo bTmp :b){
+			_so(a, bTmp);
+		}
+	}	 
+	void _so(String a, com.adobe.dp.fb2.FB2GenreInfo  b){
+		if (b==null)return;
+		_so(a+".name", b.getName()  );
+		_so(a+".genre", b.getName()  );
+		_so(a+".match", b.getMatch() );
+		
+	}
+
+ 	
+	 
+	void _so(String a, com.adobe.dp.fb2.FB2PublishInfo b){
+		if (b==null)return;
+		_so(a+".BookName", b.getBookName());
+		_so(a+".City",  b.getCity()   );
+		_so(a+".ISBN", b.getISBN()   );
+		_so(a+".Publisher", b.getPublisher()  );
+		_so(a+".Year", b.getYear() );
+		_so(a+".Sequences", b.getSequences() );
+		
+	}
+	void _so(String a, com.adobe.dp.fb2.FB2DateInfo b){
+		if (b==null)return;
+		_so(a+".HumanReadable", b.getHumanReadable() );
+		_so(a+".MachineReadable", b.getMachineReadable()  );
+		_so(a+".date", b.getDate()  );
+	}
+	void _so(String a, String []  b){
+		if (b==null)return;
+		int i=0;
+		for (String bTmp:b){
+			_so(a+":["+i+++"]:", bTmp );
+		}
+	}
+	void _so(String a, com.adobe.dp.fb2.FB2DocumentInfo b){
+		if (b==null)return;
+		_so(a+".id", b.getId() );
+		_so(a+".Authors", b.getAuthors() );
+		_so(a+".ProgramUsed", b.getProgramUsed()  );
+		_so(a+".history", b.getHistory() ) ;
+		_so(a+".SrcOcr", b.getSrcOcr() ) ;
+		_so(a+".SrcUrls", b.getSrcUrls() ) ;
+		_so(a+".version", b.getVersion() ) ;
+		_so(a+".id", b.getDate() ) ;
+	}	
+	
+	
+	public void testFB2_at_zip() throws IOException, FB2FormatException{
+		
+		InputStream fb2inPath = this.getClass().getClassLoader().getResourceAsStream("fb2/path2fb2.properties");
+		Properties pathProps = new Properties();
+		pathProps.load(fb2inPath);
+		
+		InputStream in = new FileInputStream(pathProps.getProperty("path"));
+		ZipInputStream zin = new ZipInputStream(in );
+		ZipEntry zen = zin .getNextEntry();
+		
+		double avgTmp = 0; 
+		long docCount =0;
+		long msCount =0;
+		
+		
+			for (;zen != null ; zen = zin .getNextEntry()){
+				docCount++;
+				System.out.println("-----"+zen);
+				try{
+					long startTmp = System.currentTimeMillis();
+					
+					InputStream yipETmp = copyZipEntry(zen, zin);
+					FB2Document doc = new FB2Document(yipETmp  );
+					long stopTmp = System.currentTimeMillis();			
+					long x = stopTmp - startTmp;
+					msCount +=x;
+					avgTmp = msCount/docCount;
+					System.out.println(docCount+"$"+x+":"+avgTmp);		 
+					_so(""+zen, doc);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+		zin.close();
+	}
+	private void _so(String idPar,FB2Document doc) {
+		oTmp = new Wdb("Book");
+		
+		_so("titleInfo",  doc.getTitleInfo()); 
+		_so("srcTitleInfo",doc.getSrcTitleInfo() );
+		_so("PublishInfo",doc.getPublishInfo() );
+		_so("DocumentInfo",doc.getDocumentInfo() );
+		_so("BodySections",doc.getBodySections() );
+		WDBOService.getInstance().flush(oTmp);
+	}
+	
+	public void testSearchByFB2() throws CorruptIndexException, IOException, ParseException, InterruptedException, URISyntaxException{
+		// creating some objects...
+		try{
+			testFB2_at_zip();
+		}catch(Throwable e){e.printStackTrace();}
+		
+		// Creating IndexWriter object and specifying the path where Indexed
+		//files are to be stored.
+		String pathTmp ="./.indexfile";
+		StandardAnalyzer analyzerTmp = new StandardAnalyzer(Version.LUCENE_30);
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
+		Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
+		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp, mfl  );
+		            
+		WDBOService ddboService = WDBOService.getInstance();      
+		
+		// reindexing full DB
+		for (Wdb o:ddboService.getObjects() )
+		{
+			// Getting each field present in an Obj 
+			                
+			// For each row, creating a document and adding data to the document with the associated fields.
+			org.apache.lucene.document.Document document = new org.apache.lucene.document.Document();
+			Reader rdrTmp = new WdbReader(o);
+			document.add(new Field ("wdb", rdrTmp));  
+			
+			String scUri = "";
+			for (String key :o.getPropertyNames()){
+				Wdb propVal = o.getProperty(key);
+				try{
+					String _ = propVal._();
+					Field field = new Field(key, _,Field.Store.YES,Field.Index.ANALYZED);
+					document.add(field);
+					scUri+=key;
+					scUri+=",";
+					
+				}catch(Exception e){
+					//e.printStackTrace();
+				}
+			}
+			
+			// store full path as "cs-uri"
+			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.ANALYZED));
+			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.ANALYZED));   
+ 
+			System.out.println("INDEX:"+o.getId()+":::"+scUri);
+			// Adding document to the index file.
+			indexWriter.addDocument(document);
+		}        
+		indexWriter.optimize();
+		indexWriter.close(); 
+		
+		// ##2 - search 
+		{
+			search_2("adventure", true, "genre");		
+		}
+	}
+
 }
 
 
