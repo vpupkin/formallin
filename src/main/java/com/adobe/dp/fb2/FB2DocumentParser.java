@@ -336,6 +336,7 @@ public class FB2DocumentParser {
 					currAuthorInfo = null;
 				} else if (localName.equals("first-name")) {
 					currAuthorInfo.setFirstName(flushAcc());
+
 				} else if (localName.equals("last-name")) {
 					currAuthorInfo.setLastName(flushAcc());
 				} else if (localName.equals("middle-name")) {
@@ -376,6 +377,8 @@ public class FB2DocumentParser {
 					currTitleInfo = null;
 				} else if (localName.equals("book-title")) {
 					currTitleInfo.setBookTitle(flushAcc());
+				} else if (localName.equals("genre")) {
+					currGenreInfo.setName(flushAcc());					
 				} else if (localName.equals("keywords")) {
 					currTitleInfo.setKeywords(flushAcc());
 				} else if (localName.equals("lang")) {
@@ -473,6 +476,8 @@ public class FB2DocumentParser {
 					addAuthor(translators);
 				} else if (localName.equals("genre")) {
 					currGenreInfo = new FB2GenreInfo();
+					currGenreInfo.setName(acc.toString());
+					//currGenreInfo.setName(getContext().toString());
 					String match = attributes.getValue("match");
 					if (match != null) {
 						try {
@@ -481,6 +486,7 @@ public class FB2DocumentParser {
 							e.printStackTrace();
 						}
 					}
+					genres.add(currGenreInfo);
 				} else if (localName.equals("sequence")) {
 					addSequence(attributes);
 				} else if (localName.equals("date")) {
