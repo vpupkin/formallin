@@ -938,7 +938,7 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			    Object uidTmp = doc.get("uid");
 				String _ = null;
 				try{
-					_ = ((Wdb)ddboService .getByUID(uidTmp))._();
+					_ = ""+ ddboService .getByUID(uidTmp) ;
 				}catch(Exception e){}
 				System.out.println(uidTmp + " = "+ doc.get("cs-uri")+ " "  +"["+ _+"]");
 			}			
@@ -1222,6 +1222,13 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			document.add(new Field ("wdb", rdrTmp));  
 			
 			String scUri = "";
+			//store categories
+			for (Object catTmp :o.getCategoriesAsList() .toArray()){
+				String _ = ((Wdb)catTmp)._();
+				Field field = new Field("category",_,Field.Store.YES,Field.Index.ANALYZED);
+				document.add(field);				
+			}
+			// store proeprties
 			for (String key :o.getPropertyNames()){
 				Wdb propVal = o.getProperty(key);
 				try{
@@ -1249,7 +1256,15 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		
 		// ##2 - search 
 		{
-			search_2("adventure", true, "genre");		
+			
+			search_2("BookTitle", true, "category");
+			search_2("LastName", true, "category");
+			search_2("MiddleName", true, "category");
+			search_2("FirstName", true, "category");
+			search_2("Authors", true, "category");
+			search_2("Book", true, "category");
+			search_2("genres", true, "category");
+			search_2("health", true, "genre");	
 		}
 	}
 

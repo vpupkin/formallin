@@ -75,10 +75,12 @@ public class WdbCollector extends Collector {
 	}
 
 	public Document doc(int i) throws CorruptIndexException, IOException {
-		Document retval =  null;
-		for (IndexReader irTmp:ir){ // TODO ??
-			retval  = irTmp.document(i);
-			break; 
+		Document theLast  = null; // keep theLastEntry
+		Document retval =  null; // returns the first entry
+		for (IndexReader irTmp:ir){ 
+			theLast = irTmp.document(Integer.parseInt( collected.get(  i ) ));// read the Document by collected Index
+			retval=retval==null? theLast :retval;
+			continue; // TODO - skip ??
 		}
 		
 		return retval;
