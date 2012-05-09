@@ -476,8 +476,6 @@ public class FB2DocumentParser {
 					addAuthor(translators);
 				} else if (localName.equals("genre")) {
 					currGenreInfo = new FB2GenreInfo();
-					currGenreInfo.setName(acc.toString());
-					//currGenreInfo.setName(getContext().toString());
 					String match = attributes.getValue("match");
 					if (match != null) {
 						try {
