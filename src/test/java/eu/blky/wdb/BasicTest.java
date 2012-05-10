@@ -1228,13 +1228,23 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 				Field field = new Field("category",_,Field.Store.YES,Field.Index.ANALYZED);
 				document.add(field);				
 			}
-			// store proeprties
+			// store properties
 			for (String key :o.getPropertyNames()){
 				Wdb propVal = o.getProperty(key);
 				try{
-					String _ = propVal._();
+					String _ = propVal.getProperty(key)._();//propVal._();
+					try{
+						Properties pTmp = new Properties();
+						
+						byte[] buf = ("x="+_).getBytes();
+						InputStream  inStream = new ByteArrayInputStream(buf );
+						pTmp .load(inStream );
+						String _newVal =pTmp .getProperty("x");
+						_ = _newVal ;
+					}catch(Exception e){}
 					Field field = new Field(key, _,Field.Store.YES,Field.Index.ANALYZED);
 					document.add(field);
+			        
 					scUri+=key;
 					scUri+=",";
 					
@@ -1244,8 +1254,8 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			}
 			
 			// store full path as "cs-uri"
-			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.ANALYZED));
-			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.ANALYZED));   
+			document.add(new Field ("cs-uri",scUri,Field.Store.NO,Field.Index.ANALYZED));
+			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.NOT_ANALYZED));   
  
 			System.out.println("INDEX:"+o.getId()+":::"+scUri);
 			// Adding document to the index file.
@@ -1261,6 +1271,14 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			search_2("LastName", true, "category");
 			search_2("MiddleName", true, "category");
 			search_2("FirstName", true, "category");
+			assertEquals( 4, search_2("Картер", true, "FirstName"));
+			assertEquals( 4,search_2("Рубцов", true, "LastName"));
+			assertEquals( 4,search_2("Вячеславович", true, "MiddleName"));
+			search_2("category", true, "wdb");
+			search_2("adventure", true, "ISBN");
+			
+			
+			
 			search_2("Authors", true, "category");
 			search_2("Book", true, "category");
 			search_2("genres", true, "category");
