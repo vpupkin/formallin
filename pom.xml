@@ -36,6 +36,12 @@
 		</plugins>
 	</build>
 	<dependencies>
+	<!--  could it be posible to use digester instead of AdobeFB2 parser? -->
+<dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-digester3</artifactId>
+	<version>3.2</version>
+</dependency>
 	
 		<!-- Experimental :will try to reproduce success from  http://www.drdobbs.com/go-parallel/article/226300241?pgno=3 
 		
