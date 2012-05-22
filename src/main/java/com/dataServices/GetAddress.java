@@ -65,8 +65,9 @@ import com.objects.Properties;
 		try {
 			AddressSearch.initialize(xmlFilePath);
 		} catch (Exception e) {
-			getServletContext().log(e, "Exception");
 			e.printStackTrace();
+			getServletContext().log(e, "Exception");
+			
 		}
 	}
 }

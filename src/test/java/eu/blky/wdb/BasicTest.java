@@ -30,21 +30,17 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-/* 4 lucene v. 3.0.3 
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.search.Collector;
-*/
 
 import net.sf.jsr107cache.Cache;
 import cc.co.llabor.cache.Manager;
@@ -734,12 +730,12 @@ public class BasicTest extends TestCase {
 		
 		// Creating IndexWriter object and specifying the path where Indexed
 		//files are to be stored.
-		/*MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;*/
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
 
-		StandardAnalyzer analyzerTmp = new StandardAnalyzer(/*Version.LUCENE_30*/);
+		StandardAnalyzer analyzerTmp = new StandardAnalyzer(Version.LUCENE_30);
 
-		Directory dirTmp = new RAMDirectory();/*new SimpleFSDirectory(getDirToIndex() )*/;
-		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp/*, mfl  */);
+		Directory dirTmp = new SimpleFSDirectory(getDirToIndex() );
+		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp, mfl  );
 		            
 		WDBOService ddboService = WDBOService.getInstance();      
 		
@@ -763,7 +759,7 @@ public class BasicTest extends TestCase {
 				Wdb propVal = o.getProperty(key);
 				try{
 					//document.add(new Field(key, propVal._(),Field.Store.YES,Field.Index.ANALYZED));
-					document.add(new Field("propertyName", key,Field.Store.NO ,Field.Index.UN_TOKENIZED/*NOT_ANALYZED_NO_NORMS*/));
+					document.add(new Field("propertyName", key,Field.Store.NO ,Field.Index.NOT_ANALYZED_NO_NORMS));
 					//scUri+=key;
 					scUri+=", ";
 				}catch(Exception e){
@@ -773,7 +769,7 @@ public class BasicTest extends TestCase {
 			for (Wdb cat :o.getCategoriesAsList()  ){
 				String valTmp = cat._();
 				try{
-					document.add(new Field("category", valTmp,Field.Store.YES,Field.Index.UN_TOKENIZED));
+					document.add(new Field("category", valTmp,Field.Store.YES,Field.Index.ANALYZED));
 					scUri+=valTmp;
 					scUri+=", ";
 				}catch(Exception e){
@@ -781,8 +777,8 @@ public class BasicTest extends TestCase {
 				}
 			}
 			// store full path as "cs-uri"
-			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.UN_TOKENIZED ));
-			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.UN_TOKENIZED));
+			document.add(new Field ("cs-uri",scUri,Field.Store.YES,Field.Index.NOT_ANALYZED ));
+			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.NOT_ANALYZED));
 			
 			                 
 			// Adding document to the index file.
@@ -832,9 +828,9 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		// Creating a RAMDirectory (memory) object, to be able to create index in memory.
 		RAMDirectory rdir = new RAMDirectory(); 
 		// Creating IndexWriter object for the Ram Directory
-		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(/*Version.LUCENE_30*/);
-		/*MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;*/
-		IndexWriter indexWriter = new IndexWriter (rdir, standardAnalyzer/*, mfl*/);		
+		StandardAnalyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_30);
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
+		IndexWriter indexWriter = new IndexWriter (rdir, standardAnalyzer, mfl);		
 		
 		return indexWriter;
 	}
@@ -863,11 +859,11 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		int retval = -1;
 		{
 			String pathTmp ="./.indexfile";
-			Directory dirTmp = new RAMDirectory(); /*new SimpleFSDirectory(new File(pathTmp))*/;
+			Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
 			
 			// Creating Searcher object and specifying the path where Indexed files are stored.
 			Searcher searcher = new IndexSearcher(dirTmp);
-			Analyzer analyzer = new StandardAnalyzer(/*Version.LUCENE_30*/);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 
 			// Printing the total number of documents or entries present in the index file.
 			System.out.println("Total Documents = "+searcher.maxDoc()) ;
@@ -875,15 +871,14 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			// Creating the QueryParser object and specifying the field name on 
 			//which search has to be done.
 			QueryParser parser = //new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
-				new QueryParser(/*Version.LUCENE_30,*/ "category", analyzer);
+				new QueryParser(Version.LUCENE_30, "category", analyzer);
 			            
 			// Creating the Query object and specifying the text for which search has to be done.
 			Query query = parser.parse(queryTmp);
 			            
 			// Below line performs the search on the index file and
-			/*WdbCollector hits = new WdbCollector(distinct);*/
-			
-			Hits hits = searcher.search(query);
+			WdbCollector hits = new WdbCollector(distinct);
+			searcher.search(query, hits);
 			            
 			// Printing the number of documents or entries that match the search query.
 			System.out.println("Number of matching documents = "+ hits.length());
@@ -910,11 +905,11 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		int retval = -1;
 		{
 			String pathTmp ="./.indexfile";
-			Directory dirTmp =  new RAMDirectory();/*new SimpleFSDirectory(new File(pathTmp))*/;
+			Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
 			
 			// Creating Searcher object and specifying the path where Indexed files are stored.
 			Searcher searcher = new IndexSearcher(dirTmp);
-			Analyzer analyzer = new StandardAnalyzer(/*Version.LUCENE_30*/);
+			Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
 
 			// Printing the total number of documents or entries present in the index file.
 			System.out.println("Total Documents = "+searcher.maxDoc()) ;
@@ -922,14 +917,14 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			// Creating the QueryParser object and specifying the field name on 
 			//which search has to be done.
 			QueryParser parser = //new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
-				new QueryParser(/*Version.LUCENE_30, */fiendName, analyzer);
+				new QueryParser(Version.LUCENE_30, fiendName, analyzer);
 			            
 			// Creating the Query object and specifying the text for which search has to be done.
 			Query query = parser.parse(queryTmp);
 			            
 			// Below line performs the search on the index file and
-			/*WdbCollector hits = new WdbCollector(distinct);*/
-			Hits hits = searcher.search(query/*, hits*/);
+			WdbCollector hits = new WdbCollector(distinct);
+			searcher.search(query, hits);
 			            
 			// Printing the number of documents or entries that match the search query.
 			System.out.println("Number of matching documents = "+ hits.length());
@@ -1209,10 +1204,10 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		// Creating IndexWriter object and specifying the path where Indexed
 		//files are to be stored.
 		String pathTmp ="./.indexfile";
-		StandardAnalyzer analyzerTmp = new StandardAnalyzer(/*Version.LUCENE_30*/);
-//		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
-		Directory dirTmp =  new RAMDirectory();/* new SimpleFSDirectory(new File(pathTmp))*/;
-		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp/*, mfl */ );
+		StandardAnalyzer analyzerTmp = new StandardAnalyzer(Version.LUCENE_30);
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;
+		Directory dirTmp = new SimpleFSDirectory(new File(pathTmp));
+		IndexWriter indexWriter = new IndexWriter(dirTmp , analyzerTmp, mfl  );
 		            
 		WDBOService ddboService = WDBOService.getInstance();      
 		
@@ -1230,7 +1225,7 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			//store categories
 			for (Object catTmp :o.getCategoriesAsList() .toArray()){
 				String _ = ((Wdb)catTmp)._();
-				Field field = new Field("category",_,Field.Store.YES,Field.Index.UN_TOKENIZED/*ANALYZED*/);
+				Field field = new Field("category",_,Field.Store.YES,Field.Index.ANALYZED);
 				document.add(field);				
 			}
 			// store properties
@@ -1247,7 +1242,7 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 						String _newVal =pTmp .getProperty("x");
 						_ = _newVal ;
 					}catch(Exception e){}
-					Field field = new Field(key, _,Field.Store.YES,Field.Index.UN_TOKENIZED);
+					Field field = new Field(key, _,Field.Store.YES,Field.Index.ANALYZED);
 					document.add(field);
 			        
 					scUri+=key;
@@ -1259,8 +1254,8 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			}
 			
 			// store full path as "cs-uri"
-			document.add(new Field ("cs-uri",scUri,Field.Store.NO,Field.Index.UN_TOKENIZED));
-			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.UN_TOKENIZED));   
+			document.add(new Field ("cs-uri",scUri,Field.Store.NO,Field.Index.ANALYZED));
+			document.add(new Field ("uid",""+o.getId(),Field.Store.YES,Field.Index.NOT_ANALYZED));   
  
 			System.out.println("INDEX:"+o.getId()+":::"+scUri);
 			// Adding document to the index file.

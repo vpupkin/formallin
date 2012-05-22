@@ -100,26 +100,26 @@ public class FontsServlet extends HttpServlet {
 	private static String getString(int code, String lang) {
 		if (lang != null && lang.equals("ru")) {
 			switch (code) {
-			case S_NO_FONTS:
-				return "Пользовательские шрифты не установлены";
-			case S_INSTALLED:
-				return "Шрифты установленные в системе:";
-			case S_ADD:
-				return "Установить дополнительные шрифты:";
-			case S_TITLE:
-				return "Управление пользовательскими шрифтами";
-			case S_BACK:
-				return "Назад";
-			case S_REPORT_TITLE :
-				return "Информация об использованных шрифтах";
-			case S_REPORT_NO_EMBEDDED :
-				return "Внедрённых шрифтов нет";
-			case S_REPORT_EMBEDDED :
-				return "Шрифты, которые будут внедрены в документ";
-			case S_REPORT_PROHIBITED :
-				return "Шрифты, которые запрещены к внедрению";
-			case S_REPORT_MISSING :
-				return "Шрифты, которые не были найдены";
+		case S_NO_FONTS:			
+			return "No custom fonts installed";
+		case S_INSTALLED:
+			return "Currently installed fonts:";
+		case S_ADD:
+			return "Install custom fonts:";
+		case S_TITLE:
+			return "Custom Font Management";
+		case S_BACK:
+			return "Back";
+		case S_REPORT_TITLE :
+			return "Font Usage Report";
+		case S_REPORT_NO_EMBEDDED :
+			return "No fonts embedded";
+		case S_REPORT_EMBEDDED :
+			return "Fonts that will be embedded";
+		case S_REPORT_PROHIBITED :
+			return "Fonts which cannot be embedded";
+		case S_REPORT_MISSING :
+			return "Missing fonts (not embedded)";
 			}
 		}
 		switch (code) {

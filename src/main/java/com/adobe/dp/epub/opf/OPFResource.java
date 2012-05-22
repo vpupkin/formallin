@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.Hashtable;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -51,7 +52,7 @@ import com.adobe.dp.epub.util.PathUtil;
 import com.adobe.dp.epub.util.Translit;
 import com.adobe.dp.xml.util.SMapImpl;
 import com.adobe.dp.xml.util.XMLSerializer;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+//port com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 
 public class OPFResource extends Resource {
 

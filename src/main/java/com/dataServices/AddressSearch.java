@@ -1,5 +1,7 @@
 package com.dataServices;
 
+ 
+import java.io.File;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,19 +18,25 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.util.Version;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 
 import com.objects.*;
 import com.dataConversion.*;
 
+import eu.blky.wdb.WdbCollector;
+
 public class AddressSearch {
-	private RAMDirectory inMemoryIndex;
+	private Directory inMemoryIndex;
 	private IndexWriter indexWriter;
 	private Searcher searcher;
 	private StandardAnalyzer standardAnalyzer;
@@ -37,15 +45,26 @@ public class AddressSearch {
 	private static AddressSearch addressSearch;
 	//Default file path
 	private String xmlFilePath = "C:/java/nrhp.xml";
+	
+	
+	private File getDirToIndex() {
+		String pathTmp ="./.indexfile";
+		File dirToIndex = new File(pathTmp);
+		dirToIndex .deleteOnExit();
+		return dirToIndex;
+	}	
 
 	private AddressSearch() throws CorruptIndexException, LockObtainFailedException, IOException, JAXBException {
-		inMemoryIndex = new RAMDirectory();
-		indexWriter = new IndexWriter(inMemoryIndex, new StandardAnalyzer());
+		MaxFieldLength mfl = MaxFieldLength .UNLIMITED ;  
+		
+		inMemoryIndex = new SimpleFSDirectory(getDirToIndex() );
+		standardAnalyzer = new StandardAnalyzer(Version.LUCENE_30); 
+		indexWriter = new IndexWriter(inMemoryIndex, standardAnalyzer, mfl);
 		addressLookup = new Hashtable<String, Property>();
 		buildIndex();
 		searcher = new IndexSearcher(inMemoryIndex);
-		standardAnalyzer = new StandardAnalyzer();
-		queryParser = new QueryParser("data", standardAnalyzer);
+		
+		queryParser = new QueryParser(Version.LUCENE_30, "data", standardAnalyzer);
 		queryParser.setAllowLeadingWildcard(true);
 	}
 	
@@ -54,6 +73,7 @@ public class AddressSearch {
 		Document doc = null;
 		StringBuffer sb = null;
 		for (Property p: propList) {
+			System.out.println(""+p);
 			doc = new Document();
 			sb= new StringBuffer();
 			if ((p.getId()==null)||(p.getAddress()==null)) continue;
@@ -61,7 +81,7 @@ public class AddressSearch {
 			if ((p.getAddress()==null) || (p.getCity()==null) || (p.getState()==null))
 				continue;
 			sb.append(p.getAddress().replaceAll(" ", "")).append(p.getCity().replaceAll(" ", ""));
-			doc.add(new Field("data", sb.toString(), Field.Store.COMPRESS, Field.Index.TOKENIZED));
+			doc.add(new Field("data", sb.toString(), Field.Store.YES, Field.Index.ANALYZED));
 			indexWriter.addDocument(doc);
 			//also add to HashTable
 			addressLookup.put(p.getId().toString(), p);
@@ -74,9 +94,8 @@ public class AddressSearch {
 		List<Property> results = new ArrayList<Property>();
 		Query query = queryParser.parse(searchString);
 		
-		Filter filterTmp = null;
-		Sort sortTmp = null;
-		Hits hits = searcher.search(query, filterTmp , sortTmp );
+		WdbCollector hits = new WdbCollector(true);
+		/*Hits hits = */searcher.search(query,hits );
 		int maxCount = 11;
 		int countTmp = 0;
 		if (hits.length() != 0)
