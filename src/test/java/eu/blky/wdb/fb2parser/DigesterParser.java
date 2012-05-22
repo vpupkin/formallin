@@ -1,9 +1,13 @@
 package eu.blky.wdb.fb2parser;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
+
+import eu.blky.wdb.Wdb;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 /**  
 	 * Parses the contents of fb2-book XML file.  The name of the file to
 	 * parse must be specified as the first command line argument. 
@@ -16,6 +20,30 @@ import java.io.InputStream;
  */
 public class DigesterParser {
 
+	public DigesterParser(  Properties digPairs, InputStream in) throws IOException, SAXException
+	{
+	        // instantiate Digester and disable XML validation
+	        Digester digester = new Digester();
+	        digester.setValidating(false);
+	        String attributeName = "xxx";
+	        Class clazz = WdbCreator.class;
+			
+	        // instantiate AddressBookParser class
+	        digester.addFactoryCreate("FictionBook", clazz, attributeName+1); 
+	        digester.addFactoryCreate("FictionBook/description", clazz, attributeName+2); 
+	        digester.addFactoryCreate("FictionBook/description/title-info", clazz, attributeName+3  ); 
+			digester.addFactoryCreate("FictionBook/description/title-info/genre", clazz,  attributeName+4 );
+
+	        digester.addSetNext("FictionBook/description",              			 		"setProperty" );
+	        digester.addSetNext("FictionBook/description/title-info",               		"setProperty" );
+	        digester.addCallMethod("FictionBook/description/title-info/genre",       "setProperty", 0);
+	        //digester.addSetNext("FictionBook/description/title-info/genre",               	"setProperty" );
+	        
+
+	        // now that rules and actions are configured, start the parsing process
+	        Object abp = digester.parse(in);
+	        System.out.println(abp); 
+	}	
 	public DigesterParser(  InputStream in) throws IOException, SAXException
 	{
 	        // instantiate Digester and disable XML validation
