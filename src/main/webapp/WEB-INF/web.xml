@@ -10,6 +10,23 @@
 		<param-value>${buildNumber}</param-value>
 	</context-param>
  	<!-- Default page to serve -->
+  <servlet>
+    <description></description>
+    <display-name>GetAddress</display-name>
+    <servlet-name>GetAddress</servlet-name>
+    <servlet-class>com.dataServices.GetAddress</servlet-class>
+    <init-param>
+    <description>XML Data file and xsd file Location</description>
+    <param-name>dataStore</param-name>
+    <param-value>xmlData</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet> 	
+  <servlet-mapping>
+    <servlet-name>GetAddress</servlet-name>
+    <url-pattern>/GetAddress</url-pattern>
+  </servlet-mapping> 	
+ 	
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
