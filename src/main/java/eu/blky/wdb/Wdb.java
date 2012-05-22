@@ -91,7 +91,7 @@ public class Wdb extends LinkedList<Wdb>{
 		return oName+/*catAsStr+*/sbAsString;
 	}
 
-	protected Wdb(){
+	public Wdb(){
 		// 
 	}
 	
@@ -242,6 +242,14 @@ public class Wdb extends LinkedList<Wdb>{
 		// TODO toooooo dirty impl...!
 		return Arrays.asList(  props.keySet().toArray(new String[]{}));
 		
+	}
+
+	
+	public void setProperty(Object digesterOnlyObj) {
+		System.out.println(digesterOnlyObj);
+	}
+	public void setProperty(String digesterOnlyObj) {
+		System.out.println(digesterOnlyObj);
 	}
 	
 	public void setProperty(String key, Wdb valuePar) {

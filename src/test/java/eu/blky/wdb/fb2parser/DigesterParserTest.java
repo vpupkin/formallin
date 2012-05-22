@@ -33,6 +33,13 @@ public class DigesterParserTest extends TestCase {
 		System.out.println(dp);
 	}
 
+	
+	public void testDigester4FB2() throws IOException, SAXException {
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream("fb2/test.fb2");
+		DigesterParser dp = new DigesterParser(null, in );
+		
+		System.out.println(dp);
+	}	
 }
 
 
