@@ -1,6 +1,9 @@
 package eu.blky.wdb;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -39,7 +42,10 @@ public class ResultSet4Cache implements ResultSet {
 	private String sql; 
 	private Set keys;
 	private Statement2Cache statement;
-	private boolean closed;
+	private boolean closed = false;
+	private BufferedReader rowsToRead;
+	private String[] cols;
+	private String nextLine;
  
 
 	public ResultSet4Cache(Statement2Cache statement2Cache, String sql) {
@@ -69,15 +75,55 @@ public class ResultSet4Cache implements ResultSet {
 
 	@Override
 	public boolean next() throws SQLException {
-		if (this.keys ==null){
-			this.keys = this.statement.getCache().keySet();
+		if (this.rowsToRead ==null){ // init HEADER + CSV
+			Cache cache = this.statement.getCache();
+			String tableNameTmp = this.sql;
+			tableNameTmp  = tableNameTmp .trim();
+			tableNameTmp  = tableNameTmp .toLowerCase();
+			tableNameTmp  = tableNameTmp .replace("select ", "");
+			tableNameTmp  = tableNameTmp .replace("* ", "");
+			tableNameTmp  = tableNameTmp .replace("from ", "");
+			
+			Object rowsTmp = cache.get(tableNameTmp );
+			System.out.println(rowsTmp); 
+			if (rowsTmp instanceof InputStream){
+				this.rowsToRead = new BufferedReader( new InputStreamReader( (InputStream) rowsTmp ));
+				try {
+					String headerTmp = rowsToRead.readLine();
+					cols = headerTmp.split(",");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					throw new SQLException(e);
+				}
+			}  
+		}else{ // read the next line
+			try {
+				this.nextLine = this.rowsToRead.readLine();
+				this.nextLine = nextLine.substring(0); // check for NPE
+			} catch (Throwable e) {
+				if (this.rowsToRead !=null)this.rowsToRead = null;
+				this.closed  = true;
+			}
 		}
-		return !keys.isEmpty();
+		boolean b = rowsToRead!=null && !this.closed ;
+		return b;
 	}
 
 	@Override
 	public void close() throws SQLException {
-		this.closed = true; 		
+		this.closed = true; 
+		if (this.rowsToRead != null){
+			try {
+				this.rowsToRead .close()  ;
+			} catch (IOException e) {
+				// TODO FTF
+				e.printStackTrace();
+				throw new SQLException(e);
+			}
+		}
+		this.rowsToRead = null;
+		
 	}
 
 	@Override
@@ -253,12 +299,19 @@ public class ResultSet4Cache implements ResultSet {
 
 	@Override
 	public String getString(String columnLabel) throws SQLException {
-		// TODO Auto-generated method stub
-		if (1 == 1)
-			throw new RuntimeException("not yet implemented since 06.06.2012");
-		else {
-			return null;
+		String retval=this.nextLine;
+		for (int i=0;i<cols.length;i++){
+			if (cols[i].equals(columnLabel)){// search for columt in the CSV
+				try{
+					retval = retval.split(",")[i];
+				}catch(NullPointerException e){
+					e.printStackTrace();
+					this.closed = true;
+					retval = "NULL!!!";
+				}
+			}
 		}
+		return retval ;
 	}
 
 	@Override

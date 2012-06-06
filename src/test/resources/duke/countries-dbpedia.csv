@@ -1,4 +1,4 @@
-id,country,capital,area
+id,country,area,capital
 "http://dbpedia.org/resource/Armenia","Armenia","29800","Yerevan"
 "http://dbpedia.org/resource/Jamaica","Jamaica","10991","Kingston, Jamaica"
 "http://dbpedia.org/resource/Georgia_%28country%29","Georgia","69700","Tbilisi"
