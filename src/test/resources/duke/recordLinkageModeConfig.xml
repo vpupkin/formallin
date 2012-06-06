@@ -36,7 +36,7 @@
     <!-- param name="jndi-path" value="jdbc/CatalogDB"/ -->
     <param name="jndi-path" value="java:/comp/env/cache/CatalogDB"/>
     <param name="query" value="
-        select * from CUSTOMERS
+        select * from countries-dbpedia.csv
       "/>
 
     <column  name="country" property="ID"/>
@@ -44,18 +44,15 @@
   </group>
 
   <group>
-    <csv>
-      <param name="input-file" value="classpath:duke/countries-mondial.csv"/>
-      
-      <column name="id" property="ID"/>
-      <column name="country"
-              property="NAME"
-              cleaner="no.priv.garshol.duke.examples.CountryNameCleaner"/>
-      <column name="capital"
-              property="CAPITAL"
-              cleaner="no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"/>
-      <column name="area"
-              property="AREA"/>
-    </csv>
+ <!-- ##2 countries-mondial.csv countries-dbpedia.csv  -->
+     <jndi>
+    <!-- param name="jndi-path" value="jdbc/CatalogDB"/ -->
+    <param name="jndi-path" value="java:/comp/env/cache/CatalogDB"/>
+    <param name="query" value="
+        select * from countries-mondial.csv
+      "/>
+
+    <column  name="country" property="ID"/>
+    </jndi>
   </group>
 </duke>
