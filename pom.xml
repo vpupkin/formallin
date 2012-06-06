@@ -36,45 +36,58 @@
 		</plugins>
 	</build>
 	<dependencies>
-	<!--  could it be posible to use digester instead of AdobeFB2 parser? -->
-<dependency>
-	<groupId>org.apache.commons</groupId>
-	<artifactId>commons-digester3</artifactId>
-	<version>3.2</version>
-</dependency>
-	
-		<!-- Experimental :will try to reproduce success from  http://www.drdobbs.com/go-parallel/article/226300241?pgno=3 
-		
 		<dependency>
-	<groupId>org.apache.solr</groupId>
-	<artifactId>solr-core</artifactId>
-	<version>3.5.0</version> 
-</dependency>
-		-->
-<dependency>
-	<groupId>org.apache.hadoop</groupId>
-	<artifactId>hadoop-core</artifactId>
-	<version>1.0.2</version>
-</dependency>
-            		
-		<dependency>
-	<groupId>org.apache.hadoop</groupId>
-	<artifactId>hadoop-common</artifactId>
-	<version>0.23.1</version>
-</dependency>
-<dependency>
-	<groupId>org.apache.hadoop</groupId>
-	<artifactId>hadoop-hdfs</artifactId>
-	<version>0.23.1</version>
-</dependency>
-<dependency>
-	<groupId>org.apache.lucene</groupId>
-	<artifactId>lucene-core</artifactId>
-	<version>3.0.3</version>
-</dependency>
-            
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>3.1.1.RELEASE</version>
+		</dependency>
 
-<!-- ordered DEPs -->
+		<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-spring</artifactId>
+			<version>3.11</version>
+		</dependency>
+		<dependency>
+			<groupId>no.priv.garshol.duke</groupId>
+			<artifactId>duke</artifactId>
+			<version>0.5</version>
+		</dependency>
+
+
+		<!-- could it be posible to use digester instead of AdobeFB2 parser? -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-digester3</artifactId>
+			<version>3.2</version>
+		</dependency>
+
+		<!-- Experimental :will try to reproduce success from http://www.drdobbs.com/go-parallel/article/226300241?pgno=3 
+			<dependency> <groupId>org.apache.solr</groupId> <artifactId>solr-core</artifactId> 
+			<version>3.5.0</version> </dependency> -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>0.23.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-hdfs</artifactId>
+			<version>0.23.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+
+
+		<!-- ordered DEPs -->
 
 		<dependency>
 			<groupId>cc.co.llabor</groupId>
@@ -115,13 +128,13 @@
 			<version>5.1.6</version>
 		</dependency>
 
-          <!-- lets use log4j! -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.6</version>
-            
-        </dependency>
+		<!-- lets use log4j! -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.6</version>
+
+		</dependency>
 
 
 	</dependencies>

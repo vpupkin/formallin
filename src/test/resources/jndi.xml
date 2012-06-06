@@ -1,0 +1,68 @@
+<!-- @see https://blogs.oracle.com/randystuph/entry/injecting_jndi_datasources_for_junit -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+
+	xmlns:p="http://www.springframework.org/schema/p"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+
+http://www.springframework.org/schema/beans/spring-beans.xsd
+
+http://www.springframework.org/schema/aop
+
+http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+
+http://www.springframework.org/schema/context
+
+http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<bean id="jndi" class="org.apache.xbean.spring.jndi.DefaultContext">
+
+		<property name="entries">
+
+			<map>
+<!-- 			
+				<entry key="cache/MyCacheddata">
+					<bean class="mama.mzla.ra.My" 	destroy-method="close" singleton="false">
+						<property name="password" value="wilson" />	
+					</bean>
+				</entry>
+
+				<entry key="jdbc/MyDataSource">
+
+					<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+
+						destroy-method="close" singleton="false">
+
+						<property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver" />
+
+						<property name="url" value="jdbc:db2://xxx.xxx.xxx.xxx:50000/DB2B" />
+
+						<property name="username" value="joebob" />
+
+						<property name="password" value="wilson" />
+
+						<property name="connectionProperties">
+
+							<map>
+
+								<entry key="currentSchema" value="schemajoe" />
+
+								<entry key="retrieveMessagesFromServerOnGetMessage" value="true" />
+
+							</map>
+
+						</property>
+
+					</bean>
+
+				</entry>
+ -->
+			</map>
+
+		</property>
+
+	</bean>
+
+</beans>
