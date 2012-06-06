@@ -20,6 +20,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -43,6 +47,8 @@ import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
 
 import net.sf.jsr107cache.Cache;
+import no.priv.garshol.duke.Duke;
+import no.priv.garshol.duke.Processor;
 import cc.co.llabor.cache.Manager;
 
 import com.adobe.dp.epub.util.Translit;
@@ -73,8 +79,67 @@ public class BasicTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-
+		setUpJNDI();
 	}
+	
+	
+	
+    // @BeforeClass 
+    public static void setUpJNDI() throws Exception {
+        // rcarver - setup the jndi context and the datasource
+        try {
+            // Create initial context
+            System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+                "org.apache.naming.java.javaURLContextFactory");
+            System.setProperty(Context.URL_PKG_PREFIXES, 
+                "org.apache.naming");            
+            
+            
+            // #2 
+            // Create initial context 
+            System.setProperty( Context.INITIAL_CONTEXT_FACTORY,               "org.apache.xbean.spring.jndi.SpringInitialContextFactory" );
+            InitialContext ic = new InitialContext();
+		
+            /* @SOURCE https://blogs.oracle.com/randystuph/entry/injecting_jndi_datasources_for_junit
+            ic.createSubcontext("java:");
+            ic.createSubcontext("java:/comp");
+            ic.createSubcontext("java:/comp/env");
+            ic.createSubcontext("java:/comp/env/jdbc");
+            ic.createSubcontext("java:/comp/env/cache");
+           
+           
+			// Construct DataSource	
+            OracleConnectionPoolDataSource ds = new OracleConnectionPoolDataSource();
+            ds.setURL("jdbc:oracle:thin:@host:port:db");
+            ds.setUser("MY_USER_NAME");
+            ds.setPassword("MY_USER_PASSWORD");
+            ic.bind("java:/comp/env/jdbc/nameofmyjdbcresource", ds);
+            */
+            //cache/CatalogDB
+            Cache cacheTmp = Manager.getCache("dicTest" );
+            DataSource cacheDs = new CacheAsDS(cacheTmp);
+            ic.bind("java:/comp/env/cache/CatalogDB", cacheDs);
+            ic.bind("cache/CatalogDB", cacheTmp);
+            
+            
+            
+            try{
+            	String jndiPath = "java:/comp/env/cache/CatalogDB";
+				Object actual = ic.lookup(jndiPath );
+				Object expected = cacheDs;
+				assertEquals(expected, actual);
+            }catch(Throwable e){
+            	e.printStackTrace();
+            }
+            
+            
+        } catch (Exception ex) {//NamingException
+            String msg = ex.getMessage();
+			//Logger.getLogger(MyDAOTest.class.getName()).log(Level.SEVERE, null, ex);\
+        	log.fine(msg );
+        }
+        
+    }
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -1286,6 +1351,20 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		}
 	}
 
+	
+	
+	
+	/**
+	 * DedUplication Killer Engine naive test
+	 * @author vipup
+	 * @throws IOException 
+	 */
+	public void testDuke() throws IOException{
+		
+		String[] arg0 = {"classpath:duke/recordLinkageModeConfig.xml"};
+		Duke.main(arg0 );
+		
+	}
 }
 
 
