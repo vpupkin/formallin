@@ -1,0 +1,3 @@
++http://dbpedia.org/resource/Armenia,5800
++http://dbpedia.org/resource/Malta,4202
++http://dbpedia.org/resource/Moldova,19654

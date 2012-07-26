@@ -51,8 +51,17 @@
     <param name="query" value="
         select * from countries-mondial.csv
       "/>
-
-    <column  name="country" property="ID"/>
+    
+      <column name="country"
+              property="NAME"
+              cleaner="no.priv.garshol.duke.examples.CountryNameCleaner"/>
+      <column name="capital"
+              property="CAPITAL"
+              cleaner="no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"/>
+      <column name="area"
+              property="AREA"/>    
+    
+    
     </jndi>
   </group>
 </duke>

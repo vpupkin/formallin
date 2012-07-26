@@ -1361,7 +1361,7 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 	 */
 	public void testDuke() throws IOException{
 		
-		String[] arg0 = {"classpath:duke/recordLinkageModeConfig.xml" };//"--testfile=%1"
+		String[] arg0 = {"classpath:duke/recordLinkageModeConfig.xml" , " --testdebug", "--testfile=classpath:duke/countries-test.txt"};//"--testfile=%1"
 		Duke.main(arg0 );
 		
 	}
