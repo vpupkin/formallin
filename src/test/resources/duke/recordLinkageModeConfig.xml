@@ -1,67 +1,51 @@
 <duke>
-  <object class="no.priv.garshol.duke.comparators.NumericComparator"
-          name="AreaComparator">
-    <param name="min-ratio" value="0.7"/>
-  </object>
-  
-  <schema>
-    <threshold>0.7</threshold>
-
-    <property type="id">
-      <name>ID</name>
-    </property>
-
-    <property>
-      <name>NAME</name> 
-      <comparator>no.priv.garshol.duke.comparators.Levenshtein</comparator>
-      <low>0.3</low>
-      <high>0.88</high>
-    </property>    
-    <property>
-      <name>AREA</name> 
-      <comparator>AreaComparator</comparator>
-      <low>0.2</low>
-      <high>0.6</high>
-    </property>
-    <property>
-      <name>CAPITAL</name> 
-      <comparator>no.priv.garshol.duke.comparators.Levenshtein</comparator>
-      <low>0.4</low>
-      <high>0.88</high>
-    </property>    
-  </schema>
-
-  <group>
-    <jndi>
-    <!-- param name="jndi-path" value="jdbc/CatalogDB"/ -->
-    <param name="jndi-path" value="java:/comp/env/cache/CatalogDB"/>
-    <param name="query" value="
-        select * from countries-dbpedia.csv
-      "/>
-
-    <column  name="country" property="ID"/>
-    </jndi>
-  </group>
-
-  <group>
- <!-- ##2 countries-mondial.csv countries-dbpedia.csv  -->
-     <jndi>
-    <!-- param name="jndi-path" value="jdbc/CatalogDB"/ -->
-    <param name="jndi-path" value="java:/comp/env/cache/CatalogDB"/>
-    <param name="query" value="
-        select * from countries-mondial.csv
-      "/>
-    
-      <column name="country"
-              property="NAME"
-              cleaner="no.priv.garshol.duke.examples.CountryNameCleaner"/>
-      <column name="capital"
-              property="CAPITAL"
-              cleaner="no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner"/>
-      <column name="area"
-              property="AREA"/>    
-    
-    
-    </jndi>
-  </group>
+	<object class="no.priv.garshol.duke.comparators.NumericComparator"
+		name="AreaComparator">
+		<param name="min-ratio" value="0.7" />
+	</object> 
+	<schema>
+		<threshold>0.7</threshold> 
+		<property type="id">
+			<name>ID</name>
+		</property> 
+		<property>
+			<name>NAME</name>
+			<comparator>no.priv.garshol.duke.comparators.Levenshtein</comparator>
+			<low>0.3</low>
+			<high>0.88</high>
+		</property>
+		<property>
+			<name>AREA</name>
+			<comparator>AreaComparator</comparator>
+			<low>0.2</low>
+			<high>0.6</high>
+		</property>
+		<property>
+			<name>CAPITAL</name>
+			<comparator>no.priv.garshol.duke.comparators.Levenshtein</comparator>
+			<low>0.4</low>
+			<high>0.88</high>
+		</property>
+	</schema> 
+	<group>
+		<jndi>
+			<!-- param name="jndi-path" value="jdbc/CatalogDB"/ -->
+			<param name="jndi-path" value="java:/comp/env/cache/CatalogDB" />
+			<param name="query" value="  select * from countries-dbpedia.csv " /> 
+			<column name="country" property="NAME" />
+		</jndi>
+	</group> 
+	<group>
+		<!-- ##2 countries-mondial.csv countries-dbpedia.csv -->
+		<jndi>
+			<!-- param name="jndi-path" value="jdbc/CatalogDB"/ -->
+			<param name="jndi-path" value="java:/comp/env/cache/CatalogDB" />
+			<param name="query" value="    select * from countries-mondial.csv " /> 
+			<column name="country" property="NAME"
+				cleaner="no.priv.garshol.duke.examples.CountryNameCleaner" />
+			<column name="capital" property="CAPITAL"
+				cleaner="no.priv.garshol.duke.cleaners.LowerCaseNormalizeCleaner" />
+			<column name="area" property="AREA" /> 
+		</jndi>
+	</group>
 </duke>

@@ -45,10 +45,13 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+import org.xml.sax.SAXException;
 
 import net.sf.jsr107cache.Cache;
+import no.priv.garshol.duke.ConfigLoader;
 import no.priv.garshol.duke.Duke;
 import no.priv.garshol.duke.Processor;
+import no.priv.garshol.duke.matchers.PrintMatchListener;
 import cc.co.llabor.cache.Manager;
 
 import com.adobe.dp.epub.util.Translit;
@@ -1366,11 +1369,23 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 	 * DedUplication Killer Engine naive test
 	 * @author vipup
 	 * @throws IOException 
+	 * @throws SAXException 
 	 */
-	public void testDuke() throws IOException{
+	public void testDuke() throws IOException, SAXException{
 		
-		String[] arg0 = {"classpath:duke/recordLinkageModeConfig.xml" , " --testdebug", "--testfile=classpath:duke/countries-test.txt"};//"--testfile=%1"
-		Duke.main(arg0 );
+		//String[] arg0 = {"classpath:duke/recordLinkageModeConfig.xml" , "--verbose"," --testdebug", "--testfile=classpath:duke/countries-test.txt"};//"--testfile=%1"
+		//Duke.main(arg0 );
+		
+	    no.priv.garshol.duke.Configuration config = ConfigLoader.load(
+	    		"classpath:duke/recordLinkageModeConfig.xml"
+	    		//"classpath:duke/deduplicationModeConfig.xml"
+	    		);
+	    Processor proc = new Processor(config);
+	    proc.addMatchListener(new PrintMatchListener(true, true, true, true));
+	    proc.link();
+	    //proc.deduplicate();
+	    proc.close();
+
 		
 	}
 }
