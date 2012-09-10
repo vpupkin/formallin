@@ -299,6 +299,9 @@ public class ResultSet4Cache implements ResultSet {
 
 	@Override
 	public String getString(String columnLabel) throws SQLException {
+		if (nextLine==null){
+			next();
+		}
 		String retval=this.nextLine;
 		for (int i=0;i<cols.length;i++){
 			if (cols[i].equals(columnLabel)){// search for columt in the CSV
