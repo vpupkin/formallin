@@ -34,7 +34,26 @@
 			</plugin>
 
 		</plugins>
+		
+		
+					
+
 	</build>
+	<repositories>
+
+		<repository>
+			<id>pegasusSNAPSHOT</id>
+			<name>Pegasus SNAPSHOT-Dir</name>
+			<url>https://pegasus.peras.fiducia.de/upme/up/SNAPSHOTS/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>

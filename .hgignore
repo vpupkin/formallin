@@ -1,6 +1,8 @@
 syntax: regexp
 ^.settings$ 
 syntax: glob
+1
+.indexfile
 *.log
 .classpath
 .project
