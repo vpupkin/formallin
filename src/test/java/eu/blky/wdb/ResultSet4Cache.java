@@ -85,7 +85,7 @@ public class ResultSet4Cache implements ResultSet {
 			tableNameTmp  = tableNameTmp .replace("from ", "");
 			
 			Object rowsTmp = cache.get(tableNameTmp );
-			System.out.println(rowsTmp); 
+			System.out.println("ROWs retrieved from ["+rowsTmp+"@"+tableNameTmp); 
 			if (rowsTmp instanceof InputStream){
 				this.rowsToRead = new BufferedReader( new InputStreamReader( (InputStream) rowsTmp ));
 				try {
