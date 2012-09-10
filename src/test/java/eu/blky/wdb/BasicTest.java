@@ -786,8 +786,17 @@ public class BasicTest extends TestCase {
 		return ddboService;
 	}
 	
-	
-	public void testSearch() throws CorruptIndexException, IOException, ParseException, InterruptedException, URISyntaxException{
+	/**
+	 * TODO Hadoop-based search
+	 *  
+	 * @author vipup
+	 * @throws CorruptIndexException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws InterruptedException
+	 * @throws URISyntaxException
+	 */
+	public void _testSearch() throws CorruptIndexException, IOException, ParseException, InterruptedException, URISyntaxException{
 		// creating some objects...
 		try{
 			 createSomeObjects(5);
@@ -1332,21 +1341,21 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		// ##2 - search 
 		{
 			
-			searchViaLuceneAtFIO("BookTitle", true, "category");
-			searchViaLuceneAtFIO("LastName", true, "category");
-			searchViaLuceneAtFIO("MiddleName", true, "category");
-			searchViaLuceneAtFIO("FirstName", true, "category");
-			assertEquals( 4, searchViaLuceneAtFIO("\u041A\u0430\u0440\u0442\u0435\u0440", true, "FirstName"));
-			assertEquals( 4,searchViaLuceneAtFIO("\u0420\u0443\u0431\u0446\u043E\u0432", true, "LastName"));
-			assertEquals( 4,searchViaLuceneAtFIO("\u0412\u044F\u0447\u0435\u0441\u043B\u0430\u0432\u043E\u0432\u0438\u0447", true, "MiddleName"));			searchViaLuceneAtFIO("category", true, "wdb");
-			searchViaLuceneAtFIO("adventure", true, "ISBN");
+			assertEquals( 10, searchViaLuceneAtFIO("BookTitle", true, "category"));
+			assertEquals( 14, searchViaLuceneAtFIO("LastName", true, "category"));
+			assertEquals( 6, searchViaLuceneAtFIO("MiddleName", true, "category"));
+			assertEquals( 1, searchViaLuceneAtFIO("\u041A\u0430\u0440\u0442\u0435\u0440", true, "FirstName"));
+			assertEquals( 1,searchViaLuceneAtFIO("\u0420\u0443\u0431\u0446\u043E\u0432", true, "LastName"));
+			assertEquals( 1,searchViaLuceneAtFIO("\u0412\u044F\u0447\u0435\u0441\u043B\u0430\u0432\u043E\u0432\u0438\u0447", true, "MiddleName"));			
+			assertEquals( 0,searchViaLuceneAtFIO("category", true, "wdb"));
+			assertEquals( 0, searchViaLuceneAtFIO("adventure", true, "ISBN"));
 			
 			
 			
-			searchViaLuceneAtFIO("Authors", true, "category");
-			searchViaLuceneAtFIO("Book", true, "category");
-			searchViaLuceneAtFIO("genres", true, "category");
-			searchViaLuceneAtFIO("health", true, "genre");	
+			assertEquals( 5,searchViaLuceneAtFIO("Authors", true, "category"));
+			assertEquals( 5,searchViaLuceneAtFIO("Book", true, "category"));
+			assertEquals( 5,searchViaLuceneAtFIO("genres", true, "category"));
+			assertEquals( 1,searchViaLuceneAtFIO("health", true, "genre"));	
 		}
 	}
 
