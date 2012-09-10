@@ -965,7 +965,7 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		
 		return retval;
 	}
-	private int search_2(String queryTmp, boolean distinct, String fiendName) throws IOException, ParseException {
+	private int searchViaLuceneAtFIO(String queryTmp, boolean distinct, String fieldName) throws IOException, ParseException {
 		// ##2 - search
 		int retval = -1;
 		{
@@ -982,7 +982,7 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 			// Creating the QueryParser object and specifying the field name on 
 			//which search has to be done.
 			QueryParser parser = //new QueryParser(Version.LUCENE_30, "cs-uri", analyzer);
-				new QueryParser(Version.LUCENE_30, fiendName, analyzer);
+				new QueryParser(Version.LUCENE_30, fieldName, analyzer);
 			            
 			// Creating the Query object and specifying the text for which search has to be done.
 			Query query = parser.parse(queryTmp);
@@ -1332,22 +1332,21 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 		// ##2 - search 
 		{
 			
-			search_2("BookTitle", true, "category");
-			search_2("LastName", true, "category");
-			search_2("MiddleName", true, "category");
-			search_2("FirstName", true, "category");
-			assertEquals( 4, search_2("Картер", true, "FirstName"));
-			assertEquals( 4,search_2("Рубцов", true, "LastName"));
-			assertEquals( 4,search_2("Вячеславович", true, "MiddleName"));
-			search_2("category", true, "wdb");
-			search_2("adventure", true, "ISBN");
+			searchViaLuceneAtFIO("BookTitle", true, "category");
+			searchViaLuceneAtFIO("LastName", true, "category");
+			searchViaLuceneAtFIO("MiddleName", true, "category");
+			searchViaLuceneAtFIO("FirstName", true, "category");
+			assertEquals( 4, searchViaLuceneAtFIO("\u041A\u0430\u0440\u0442\u0435\u0440", true, "FirstName"));
+			assertEquals( 4,searchViaLuceneAtFIO("\u0420\u0443\u0431\u0446\u043E\u0432", true, "LastName"));
+			assertEquals( 4,searchViaLuceneAtFIO("\u0412\u044F\u0447\u0435\u0441\u043B\u0430\u0432\u043E\u0432\u0438\u0447", true, "MiddleName"));			searchViaLuceneAtFIO("category", true, "wdb");
+			searchViaLuceneAtFIO("adventure", true, "ISBN");
 			
 			
 			
-			search_2("Authors", true, "category");
-			search_2("Book", true, "category");
-			search_2("genres", true, "category");
-			search_2("health", true, "genre");	
+			searchViaLuceneAtFIO("Authors", true, "category");
+			searchViaLuceneAtFIO("Book", true, "category");
+			searchViaLuceneAtFIO("genres", true, "category");
+			searchViaLuceneAtFIO("health", true, "genre");	
 		}
 	}
 

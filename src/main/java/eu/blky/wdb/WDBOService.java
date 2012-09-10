@@ -227,7 +227,7 @@ public class WDBOService {
 			cTmp.put( key , oParAsProperties  );
 			Object idTMP1 = oPar.getId();
 			String newidTMP2 = oParAsProperties.getProperty("id");
-			System.out.println("idTMP1:"+idTMP1 +" ====>>>> "+newidTMP2);
+			System.out.println("idTMP(1):"+idTMP1 +" ====>>>> "+newidTMP2);
 			oPar.setId(newidTMP2 );
 			oPar.injectProperties(oParAsProperties);
 		// 0 1	|| // 1 1  	-> merge
@@ -247,7 +247,7 @@ public class WDBOService {
 			cTmp.put(key,  oParAsProperties);
 			Object idTMP1 = oPar.getId();
 			String newidTMP2 = oParAsProperties.getProperty("id");
-			System.out.println("idTMP1:::"+idTMP1 +" ====>>>> "+newidTMP2);
+			System.out.println("idTMP[1]:::"+idTMP1 +" ====>>>> "+newidTMP2);
 			oPar.setId(newidTMP2 );
 		}
 	}
