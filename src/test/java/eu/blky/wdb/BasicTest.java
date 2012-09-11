@@ -1366,26 +1366,33 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 	
 	
 	/**
-	 * DedUplication Killer Engine naive test
+	 * 
+	 * @see http://code.google.com/p/duke/wiki/UsingTheAPI
+	 * 
+	 * DedUplication Killer Engine API test
+	 * 
+	 * compare(link by match) NAME@countries-dbpedia.csv && NAME@countries-mondial.csv
+	 * 
+	 * @see /formallin/src/test/resources/duke/recordLinkageModeConfig.xml
+	 * 
 	 * @author vipup
 	 * @throws IOException 
 	 * @throws SAXException 
 	 */
 	public void testDuke() throws IOException, SAXException{
-		
-		//String[] arg0 = {"classpath:duke/recordLinkageModeConfig.xml" , "--verbose"," --testdebug", "--testfile=classpath:duke/countries-test.txt"};//"--testfile=%1"
-		//Duke.main(arg0 );
-		
+ 
 	    no.priv.garshol.duke.Configuration config = ConfigLoader.load(
 	    		"classpath:duke/recordLinkageModeConfig.xml"
 	    		//"classpath:duke/deduplicationModeConfig.xml"
 	    		);
 	    Processor proc = new Processor(config);
-	    proc.addMatchListener(new PrintMatchListener(true, true, true, true));
+	    PrintMatchListener pmatchListener = new PrintMatchListener(true, true, true, true);
+		proc.addMatchListener(pmatchListener);
 	    proc.link();
 	    //proc.deduplicate();
-	    proc.close();
-
+	    proc.close(); 
+	    
+		assertEquals(3, pmatchListener.getMatchCount());
 		
 	}
 }
