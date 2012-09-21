@@ -138,12 +138,15 @@ public class ResultSet4Cache implements ResultSet {
 
 	@Override
 	public String getString(int columnIndex) throws SQLException {
-		// TODO Auto-generated method stub
-		if (1 == 1)
-			throw new RuntimeException("not yet implemented since 06.06.2012");
-		else {
-			return null;
+		String retval=this.nextLine;
+		try{
+			retval = retval.split(",")[columnIndex];
+		}catch(NullPointerException e){
+			e.printStackTrace();
+			this.closed = true;
+			retval = "NULL!!!";
 		}
+		return retval;
 	}
 
 	@Override
@@ -305,13 +308,7 @@ public class ResultSet4Cache implements ResultSet {
 		String retval=this.nextLine;
 		for (int i=0;i<cols.length;i++){
 			if (cols[i].equals(columnLabel)){// search for columt in the CSV
-				try{
-					retval = retval.split(",")[i];
-				}catch(NullPointerException e){
-					e.printStackTrace();
-					this.closed = true;
-					retval = "NULL!!!";
-				}
+				retval = getString(i);
 			}
 		}
 		return retval ;
