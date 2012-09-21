@@ -22,6 +22,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.hadoop.conf.Configuration;
@@ -135,6 +136,7 @@ public class BasicTest extends TestCase {
             	e.printStackTrace();
             }
             
+            checkResource(cacheTmp);
             
         } catch (Exception ex) {//NamingException
             String msg = ex.getMessage();
@@ -143,6 +145,21 @@ public class BasicTest extends TestCase {
         }
         
     }
+
+	private static void checkResource(Cache jndicacheTmp) throws IOException {  
+		//"countries-dbpedia.csv"
+		Object o = jndicacheTmp .get("countries-dbpedia.csv");
+		if (o==null){
+			pushResourceToCache(jndicacheTmp , "countries-dbpedia.csv");
+		}
+		//countries-mondial.csv
+		o = jndicacheTmp .get("countries-mondial.csv");
+		if (o==null){
+			pushResourceToCache(jndicacheTmp , "countries-mondial.csv");
+		}
+	}
+
+
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
@@ -1378,9 +1395,10 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 	 * @author vipup
 	 * @throws IOException 
 	 * @throws SAXException 
+	 * @throws NamingException 
 	 */
-	public void testDuke() throws IOException, SAXException{
- 
+	public void testDuke() throws IOException, SAXException, NamingException{ 
+		
 	    no.priv.garshol.duke.Configuration config = ConfigLoader.load(
 	    		"classpath:duke/recordLinkageModeConfig.xml"
 	    		//"classpath:duke/deduplicationModeConfig.xml"
@@ -1394,6 +1412,14 @@ FSDataInputStream filereader = dfs.open(new Path(dfs.getWorkingDirectory()+ File
 	    
 		assertEquals(3, pmatchListener.getMatchCount());
 		
+	}
+
+
+
+	private static void pushResourceToCache(Cache jndicacheTmp, String rNamePar) throws IOException {
+		InputStream o = Cache.class.getClassLoader().getResourceAsStream("duke/"+rNamePar);
+		jndicacheTmp.put(rNamePar, o);
+		o.close();
 	}
 }
 
